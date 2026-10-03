@@ -743,7 +743,7 @@ footer.foot .linkbtn:hover { color: #fff; }
           <button class="farr next" type="button" id="f-next" aria-label="Ver mais abas" hidden>›</button>
         </div>
         <div class="tools">
-          <label class="search"><span class="sr">Buscar</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" type="search" placeholder="Buscar peça" autocomplete="off"></label>
+          <label class="search"><span class="sr">Buscar</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" type="search" placeholder="Buscar peça" autocomplete="off" maxlength="60" spellcheck="false"></label>
           <label><span class="sr">Ordenar</span><select class="sort" id="sort"><option value="">Destaques</option><option value="new">Novidades</option><option value="low">Menor preço</option><option value="high">Maior preço</option></select></label>
         </div>
       </div>
@@ -1197,7 +1197,11 @@ let tab = "cart";
 let pdpId = null, pdpPhoto = 0, lastFocus = null;
 try { favs = new Set(JSON.parse(localStorage.getItem("eu-favs") || "[]")); } catch (e) {}
 try { const s = localStorage.getItem("eu-cat"); if (s) current = s; } catch (e) {}
-try { cart = JSON.parse(localStorage.getItem("eu-cart") || "[]").filter(l => l && l.id && l.qty > 0); } catch (e) { cart = []; }
+// Carrinho guardado no aparelho pode ter sido alterado à mão: só entram linhas no formato certo.
+const normLine = l => l && typeof l === "object" && typeof l.id === "string" && /^[A-Za-z0-9_-]{1,64}$/.test(l.id) && Number.isInteger(l.qty) && l.qty >= 1 && l.qty <= 99
+  ? { id: l.id, size: typeof l.size === "string" ? clean(l.size, 12) : "", qty: l.qty } : null;
+try { const c = JSON.parse(localStorage.getItem("eu-cart") || "[]"); cart = Array.isArray(c) ? c.map(normLine).filter(Boolean).slice(0, 50) : []; if (JSON.stringify(cart) !== JSON.stringify(c)) localStorage.setItem("eu-cart", JSON.stringify(cart)); } catch (e) { cart = []; }
+try { const f = JSON.parse(localStorage.getItem("eu-favs") || "[]"); favs = new Set(Array.isArray(f) ? f.filter(id => typeof id === "string" && /^[A-Za-z0-9_-]{1,64}$/.test(id)).slice(0, 60) : []); } catch (e) { favs = new Set(); }
 
 function toast(text) { const t = $("#toast"); t.textContent = text; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 3000); }
 function waNumber() { const d = String(config.whatsapp || "").replace(/\D/g, ""); return !d ? "" : d.length <= 11 ? "55" + d : d; }
@@ -1429,7 +1433,7 @@ $("#grid").addEventListener("click", e => {
   if (ph && ph.dataset.swiped) { delete ph.dataset.swiped; return; }
   openPdp(id);
 });
-$("#q").addEventListener("input", e => { query = e.target.value; renderGrid(); });
+$("#q").addEventListener("input", e => { query = clean(e.target.value, 60); renderGrid(); });
 $("#sort").addEventListener("change", e => { sortBy = e.target.value; renderGrid(); });
 $("#nores-clear").addEventListener("click", () => { query = ""; $("#q").value = ""; pickCat("Tudo"); });
 $("#search-open").addEventListener("click", () => { $("#pecas").scrollIntoView(); setTimeout(() => $("#q").focus({ preventScroll: true }), 350); });
@@ -2038,7 +2042,8 @@ async function saveAccount(name, email, waRaw, consent, terms) {
   name = clean(name, 80); email = clean(email, 120).toLowerCase();
   const wa = String(waRaw || "").replace(/\D/g, "").slice(0, 13);
   if (name.length < 2) return "Coloque seu nome.";
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return "Confira o e-mail.";
+  if (!/^[\p{L}\p{M}][\p{L}\p{M}' .-]{1,79}$/u.test(name)) return "Use só letras no nome.";
+  if (email.length > 120 || !/^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*\.[A-Za-z]{2,24}$/.test(email)) return "Confira o e-mail.";
   if (wa.length < 10 || wa.length > 13) return "Coloque o WhatsApp com DDD.";
   if (!terms) return "Para continuar, aceite os Termos de Uso e a Política de Privacidade.";
   if (!myRef) return "Não foi possível salvar agora. Tente de novo.";
