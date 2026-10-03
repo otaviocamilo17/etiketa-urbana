@@ -634,6 +634,26 @@ footer.foot .base { display: flex; justify-content: space-between; flex-wrap: wr
 .wafab svg { width: 32px; height: 32px; }
 @media (max-width: 600px) { .toast { bottom: calc(92px + env(safe-area-inset-bottom, 0px)); } }
 .wafab:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.ckbar { position: fixed; left: 16px; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 60; max-width: 980px; margin: 0 auto; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-top: 4px solid #b3121c; border-radius: 14px; box-shadow: 0 18px 50px rgba(0,0,0,.28); padding: 20px 22px; display: flex; align-items: center; gap: 16px 24px; flex-wrap: wrap; animation: fadein .25s ease; }
+.ckbar[hidden] { display: none; }
+.ckbar .ck-t { flex: 1 1 380px; display: grid; gap: 4px; font-size: 16px; line-height: 1.5; }
+.ckbar .ck-t b { font-size: 18px; }
+.ckbar .ck-t a { color: inherit; font-weight: 700; }
+.ckbar .ck-b { display: flex; gap: 10px; flex-wrap: wrap; }
+.ckbar .ck-b .btn { min-width: 150px; }
+body.ck-open .wafab { display: none; }
+body.priv-open .ckbar { display: none; }
+@media (max-width: 560px) { .ckbar { left: 10px; right: 10px; padding: 16px; gap: 12px; } .ckbar .ck-t { font-size: 15px; line-height: 1.45; } .ckbar .ck-t b { font-size: 17px; } .ckbar .ck-b { width: 100%; } .ckbar .ck-b .btn { flex: 1 1 0; min-width: 0; } }
+.policy { max-width: 820px; padding-block: clamp(28px, 5vw, 56px) 64px; }
+.policy h2 { font-size: clamp(34px, 6vw, 56px); line-height: .95; text-transform: uppercase; margin: 0 0 8px; }
+.policy .upd { color: var(--muted); font-weight: 600; margin: 0 0 28px; }
+.policy h3 { font-size: 21px; margin: 30px 0 8px; }
+.policy p, .policy li { font-size: 17px; line-height: 1.65; color: var(--ink); }
+.policy ul { padding-left: 22px; margin: 6px 0; }
+.policy .box { background: var(--soft); border-radius: 10px; padding: 16px 18px; margin-top: 10px; }
+.policy .acts { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+footer.foot .linkbtn { display: block; background: none; border: 0; padding: 4px 0; font: inherit; color: #b9b9bf; cursor: pointer; text-align: left; }
+footer.foot .linkbtn:hover { color: #fff; }
 .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 14px 22px; border-radius: 999px; font-size: 16px; font-weight: 700; z-index: 70; max-width: calc(100% - 32px); box-shadow: 0 10px 30px rgba(0,0,0,.25); text-align: center; }
 </style>
 
@@ -755,7 +775,7 @@ footer.foot .base { display: flex; justify-content: space-between; flex-wrap: wr
             <div class="f"><label for="acc-email">E-mail</label><input id="acc-email" type="email" autocomplete="email" maxlength="120"></div>
             <div class="f"><label for="acc-wa">WhatsApp</label><input id="acc-wa" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="(19) 90000-0000"></div>
           </div>
-          <label class="check" style="margin-top:16px"><input type="checkbox" id="acc-consent"> Aceito que a Etiketa Urbana use estes dados para falar comigo sobre novidades e pedidos.</label>
+          <label class="check" style="margin-top:16px"><input type="checkbox" id="acc-consent"> Aceito que a Etiketa Urbana use estes dados para falar comigo sobre novidades e pedidos. <a href="#privacidade">Política de Privacidade</a></label>
           <div class="actions" style="margin-top:16px">
             <button class="btn red big" type="submit" id="acc-save">Criar minha conta</button>
             <button class="btn big" type="button" id="acc-cancel" hidden>Cancelar</button>
@@ -834,7 +854,7 @@ footer.foot .base { display: flex; justify-content: space-between; flex-wrap: wr
   <div class="wrap">
     <div class="cols">
       <div><h4>Etiketa Urbana</h4><p>Moda masculina<br>Rua Urbano Romano Meirelles, 51<br>Vila Nova, Porto Ferreira, SP</p></div>
-      <div><h4>Ajuda</h4><a href="#como-comprar">Como comprar</a><a href="#loja">Horário e endereço</a><a href="#conta">Minha conta</a><a href="#carrinho">Meu carrinho</a></div>
+      <div><h4>Ajuda</h4><a href="#como-comprar">Como comprar</a><a href="#loja">Horário e endereço</a><a href="#conta">Minha conta</a><a href="#carrinho">Meu carrinho</a><a href="#privacidade">Política de Privacidade</a><button class="linkbtn" type="button" id="ck-prefs">Preferências de cookies</button></div>
       <div><h4>Siga</h4><a href="https://www.instagram.com/etiketaurbanaoficial/" target="_blank" rel="noopener">Instagram @etiketaurbanaoficial</a><a id="foot-wa" target="_blank" rel="noopener" href="#">WhatsApp da loja</a></div>
     </div>
     <div class="base"><span>© Etiketa Urbana · Porto Ferreira, SP</span><span>Pedidos fechados pelo WhatsApp da loja</span></div>
@@ -871,7 +891,7 @@ footer.foot .base { display: flex; justify-content: space-between; flex-wrap: wr
           <div class="f"><label for="who-name">Nome completo</label><input id="who-name" autocomplete="name" maxlength="80"></div>
           <div class="f"><label for="who-wa">WhatsApp com DDD</label><input id="who-wa" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="(19) 90000-0000"></div>
           <div class="f"><label for="who-email">E-mail</label><input id="who-email" type="email" autocomplete="email" maxlength="120"></div>
-          <label class="check"><input type="checkbox" id="who-consent"> Aceito que a Etiketa Urbana use estes dados para falar comigo sobre pedidos e novidades.</label>
+          <label class="check"><input type="checkbox" id="who-consent"> Aceito que a Etiketa Urbana use estes dados para falar comigo sobre pedidos e novidades. <a href="#privacidade">Política de Privacidade</a></label>
           <button class="btn red big block" type="submit" id="who-save">Cadastrar e continuar</button>
           <span class="msg" id="who-msg" role="alert"></span>
         </form>
@@ -889,6 +909,50 @@ footer.foot .base { display: flex; justify-content: space-between; flex-wrap: wr
 
 <div class="added" id="added" hidden role="status"></div>
 <a class="wafab" id="wafab" hidden target="_blank" rel="noopener" href="#" aria-label="Falar com a loja no WhatsApp" title="Falar com a loja no WhatsApp"></a>
+<div class="ckbar" id="ckbar" hidden role="region" aria-label="Aviso de cookies">
+  <div class="ck-t"><b>Sua privacidade importa</b><span>Usamos cookies e tecnologias parecidas para o site funcionar e, só se você permitir, para entender como ele é usado e melhorar sua experiência. Você pode mudar isso quando quiser. Saiba mais na <a href="#privacidade">Política de Privacidade</a>.</span></div>
+  <div class="ck-b"><button class="btn" type="button" id="ck-reject">Rejeitar</button><button class="btn red" type="button" id="ck-accept">Aceitar todos</button></div>
+</div>
+<section class="accview" id="privacidade" aria-labelledby="t-priv" role="dialog" aria-modal="true" tabindex="-1">
+  <div class="accbar"><div class="wrap"><span class="accbar-t">etiketa urbana</span><button class="btn" type="button" id="priv-close">← Voltar<span class="accbar-x">&nbsp;para a loja</span></button></div></div>
+  <article class="wrap policy">
+    <div class="eyebrow">LGPD · Lei 13.709/2018</div>
+    <h2 id="t-priv">Política de Privacidade</h2>
+    <p class="upd">Atualizada em 3 de outubro de 2026</p>
+    <p>Esta política explica quais dados a Etiketa Urbana coleta neste site, para que usa, com quem compartilha e como você pode exercer seus direitos de acordo com a Lei Geral de Proteção de Dados (LGPD).</p>
+    <h3>1. Quem cuida dos seus dados</h3>
+    <p><b>Etiketa Urbana</b>, loja de moda masculina, Rua Urbano Romano Meirelles, 51, Vila Nova, Porto Ferreira/SP, CEP 13660-186. Contato para assuntos de privacidade: WhatsApp <a id="priv-wa" target="_blank" rel="noopener" href="https://wa.me/5519998984448">(19) 99898-4448</a>.</p>
+    <h3>2. Quais dados coletamos</h3>
+    <ul>
+      <li><b>Cadastro:</b> nome, e-mail e WhatsApp, informados por você em "Minha conta" ou no carrinho.</li>
+      <li><b>Pedidos:</b> peças, tamanhos, quantidades, valores e forma de pagamento escolhida. O pagamento não é feito no site; nenhum dado de cartão é coletado.</li>
+      <li><b>Preferências:</b> favoritos, avisos de "quando chegar", carrinho e peças vistas recentemente.</li>
+      <li><b>Dados de uso (só com seu consentimento):</b> páginas visitadas e cliques, de forma estatística, para melhorar o site.</li>
+    </ul>
+    <h3>3. Para que usamos</h3>
+    <ul>
+      <li>Montar e enviar seu pedido pelo WhatsApp da loja e acompanhar a situação dele (execução de contrato).</li>
+      <li>Avisar quando uma peça que você pediu voltar ao estoque (seu pedido).</li>
+      <li>Falar com você sobre pedidos e novidades, quando você marca a autorização no cadastro (consentimento).</li>
+      <li>Manter o site seguro e evitar abusos, como cadastros em massa (legítimo interesse).</li>
+      <li>Medir o uso do site, apenas se você clicar em "Aceitar todos" no aviso de cookies (consentimento).</li>
+    </ul>
+    <h3>4. Cookies e armazenamento no aparelho</h3>
+    <p><b>Necessários:</b> guardam seu carrinho, favoritos, sua escolha sobre cookies e o acesso à sua conta. Sem eles o site não funciona, por isso não dependem de consentimento.</p>
+    <p><b>Estatística e marketing:</b> ferramentas como Google Analytics ou pixels de anúncios. Ficam <b>bloqueadas</b> e só são carregadas depois que você clica em "Aceitar todos". Se você rejeitar, nada disso é carregado.</p>
+    <div class="box">Sua escolha atual: <b id="priv-choice">ainda não escolhida</b>.<div class="acts"><button class="btn" type="button" data-ck="reject">Rejeitar cookies opcionais</button><button class="btn red" type="button" data-ck="accept">Aceitar todos</button></div></div>
+    <h3>5. Com quem compartilhamos</h3>
+    <p>Não vendemos seus dados. Eles ficam guardados no serviço de hospedagem do site e são usados apenas pela equipe da loja. Quando você envia um pedido, a mensagem é aberta no WhatsApp, que tem a própria política de privacidade. Se você aceitar os cookies opcionais, os serviços de estatística recebem dados de navegação de forma agregada.</p>
+    <h3>6. Por quanto tempo guardamos</h3>
+    <p>Enquanto sua conta existir. Você pode apagar seu cadastro a qualquer momento em Minha conta, Meus dados, "Apagar meu cadastro", que remove seus dados, pedidos e avisos guardados no site. Podemos manter o mínimo exigido por lei, como registros de vendas.</p>
+    <h3>7. Seus direitos</h3>
+    <p>Pela LGPD (art. 18), você pode pedir a qualquer momento: confirmação de que tratamos seus dados, acesso, correção, anonimização ou exclusão, portabilidade, informação sobre compartilhamento e a revogação do consentimento. Basta falar com a loja pelo WhatsApp. Você também pode reclamar à Autoridade Nacional de Proteção de Dados (ANPD).</p>
+    <h3>8. Segurança</h3>
+    <p>Usamos conexão segura, limite de tentativas contra robôs, limpeza dos dados digitados e acesso restrito ao painel da loja por senha. Nenhum sistema é 100% imune, mas trabalhamos para proteger suas informações.</p>
+    <h3>9. Mudanças nesta política</h3>
+    <p>Se esta política mudar, a data no topo é atualizada e, quando a mudança for importante, pediremos sua escolha de novo.</p>
+  </article>
+</section>
 <div class="toast" id="toast" hidden role="status"></div>
 
 <script>
@@ -981,7 +1045,7 @@ function toast(text) { const t = $("#toast"); t.textContent = text; t.hidden = f
 function waNumber() { const d = String(config.whatsapp || "").replace(/\D/g, ""); return !d ? "" : d.length <= 11 ? "55" + d : d; }
 const isFav = id => favs.has(id);
 function setCount(el, n) { el.textContent = n; if (n) el.removeAttribute("data-zero"); else el.setAttribute("data-zero", ""); }
-function lock() { document.body.classList.toggle("lock", !$("#drawer").hidden || !$("#pdp").hidden || !$("#mnav").hidden || $("#conta").classList.contains("open")); $("#scrim").hidden = $("#drawer").hidden && $("#pdp").hidden && $("#mnav").hidden; }
+function lock() { document.body.classList.toggle("lock", !$("#drawer").hidden || !$("#pdp").hidden || !$("#mnav").hidden || $("#conta").classList.contains("open") || $("#privacidade").classList.contains("open")); $("#scrim").hidden = $("#drawer").hidden && $("#pdp").hidden && $("#mnav").hidden; }
 
 /* ---------- pagamento (configurado no painel) ---------- */
 const PAY_DEFAULT = { pix: true, dinheiro: true, debito: true, credito: true, parcelas: 10, desconto: 15, descontoEm: ["pix", "dinheiro"] };
@@ -1567,6 +1631,7 @@ document.addEventListener("keydown", e => {
   else if (!$("#drawer").hidden) openCart(false);
   else if (!$("#pdp").hidden) closePdp();
   else if (!$("#mnav").hidden) openMenu(false);
+  else if ($("#privacidade").classList.contains("open")) closePolicy();
   else if ($("#conta").classList.contains("open")) closeAccount();
 });
 function route() {
@@ -1575,10 +1640,74 @@ function route() {
   else if (h === "#carrinho") openCart(true, "cart");
   else if (h === "#favoritos") openCart(true, "fav");
   else if (h === "#conta") openAccount();
+  else if (h === "#privacidade") openPolicy();
   else if (verifyOn && /^#verificar\/[A-Za-z0-9_-]{30,60}$/.test(h)) openVerifyLink(h.slice(11));
   else if (h.startsWith("#peca/") && loaded) { const id = decodeURIComponent(h.slice(6)); if (find(id) && pdpId !== id) openPdp(id); }
 }
 window.addEventListener("hashchange", route);
+
+/* ---------- cookies e privacidade (LGPD) ---------- */
+// Ferramentas de estatística ou anúncios ficam BLOQUEADAS até a pessoa clicar em
+// "Aceitar todos". Para ligar uma, preencha o código abaixo (ex.: "G-XXXXXXX").
+// Outros scripts podem ser marcados no HTML como
+// <script type="text/plain" data-consent="analytics" data-src="...">  (com a tag de fechamento normal)
+// e só serão ativados depois do aceite.
+const TRACKING = { ga4: "", metaPixel: "" };
+const CK_KEY = "eu-cookies", CK_VER = 1;
+const ckGet = () => { try { const v = JSON.parse(localStorage.getItem(CK_KEY) || "null"); return v && v.v === CK_VER ? v : null; } catch (e) { return null; } };
+let trackersOn = false;
+function loadTrackers() {
+  if (trackersOn) return; trackersOn = true;
+  const add = (src, attrs) => { const sc = document.createElement("script"); sc.async = true; sc.src = src; Object.assign(sc, attrs || {}); document.head.appendChild(sc); };
+  if (/^G-[A-Z0-9]{4,15}$/.test(TRACKING.ga4)) {
+    window.dataLayer = window.dataLayer || []; window.gtag = function () { dataLayer.push(arguments); };
+    gtag("js", new Date()); gtag("config", TRACKING.ga4, { anonymize_ip: true });
+    add("https://www.googletagmanager.com/gtag/js?id=" + TRACKING.ga4);
+  }
+  if (/^\d{6,20}$/.test(TRACKING.metaPixel)) {
+    const f = window.fbq = function () { f.callMethod ? f.callMethod.apply(f, arguments) : f.queue.push(arguments); };
+    f.push = f; f.loaded = true; f.version = "2.0"; f.queue = [];
+    add("https://connect.facebook.net/en_US/fbevents.js"); fbq("init", TRACKING.metaPixel); fbq("track", "PageView");
+  }
+  document.querySelectorAll('script[type="text/plain"][data-consent]').forEach(old => {
+    const sc = document.createElement("script"); if (old.dataset.src) sc.src = old.dataset.src; else sc.textContent = old.textContent; old.replaceWith(sc);
+  });
+}
+function renderCk() {
+  const c = ckGet();
+  $("#ckbar").hidden = !!c; document.body.classList.toggle("ck-open", !c);
+  const pc = $("#priv-choice"); if (pc) pc.textContent = !c ? "ainda não escolhida" : c.choice === "all" ? "todos os cookies aceitos em " + new Date(c.at).toLocaleDateString("pt-BR") : "só os necessários (opcionais rejeitados) em " + new Date(c.at).toLocaleDateString("pt-BR");
+}
+function setCk(all) {
+  const prev = ckGet();
+  try { localStorage.setItem(CK_KEY, JSON.stringify({ v: CK_VER, choice: all ? "all" : "necessary", at: new Date().toISOString() })); } catch (e) {}
+  renderCk();
+  if (all) { loadTrackers(); toast("Preferências salvas. Obrigado!"); }
+  else { toast("Pronto. Só os cookies necessários ficam ativos."); if (prev && prev.choice === "all" && trackersOn) setTimeout(() => location.reload(), 900); }
+}
+$("#ck-accept").addEventListener("click", () => setCk(true));
+$("#ck-reject").addEventListener("click", () => setCk(false));
+$("#ck-prefs").addEventListener("click", () => openPolicy(true));
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-ck]"); if (b) { setCk(b.dataset.ck === "accept"); return; }
+  const a = e.target.closest('a[href="#privacidade"]'); if (a) { e.preventDefault(); openPolicy(); }
+});
+function openPolicy(toChoice) {
+  if (!$("#mnav").hidden) openMenu(false);
+  if (!$("#drawer").hidden) openCart(false);
+  const v = $("#privacidade"); v.classList.add("open"); v.scrollTop = 0; document.body.classList.add("priv-open"); renderCk();
+  if (toChoice) setTimeout(() => { const box = $("#priv-choice").closest(".box"); v.scrollTop = box.offsetTop - 90; }, 30);
+  lock(); v.focus({ preventScroll: true });
+}
+function closePolicy() {
+  const v = $("#privacidade"); if (!v.classList.contains("open")) return;
+  v.classList.remove("open"); document.body.classList.remove("priv-open");
+  try { if (location.hash === "#privacidade") history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+  lock();
+}
+$("#priv-close").addEventListener("click", closePolicy);
+renderCk();
+if (ckGet() && ckGet().choice === "all") loadTrackers();
 
 /* ---------- contato ---------- */
 function renderFab() {
