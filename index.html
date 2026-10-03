@@ -11,8 +11,8 @@
   { const cur = JSON.parse(localStorage.getItem(KEY) || "{}"); Object.keys(cur).forEach(k => { if (!k.startsWith("clientes/")) delete cur[k]; }); Object.assign(cur, SEED); localStorage.setItem(KEY, JSON.stringify(cur)); }
   let n = 0;
   const snapDoc = (path, d) => ({ id: path.split("/").pop(), exists: path in d, data: () => d[path] ? JSON.parse(JSON.stringify(d[path])) : undefined, metadata: { fromCache: false, hasPendingWrites: false } });
-  const canWrite = path => role === "owner" || (role === "client" && path === "clientes/" + uid);
-  const canRead = path => role === "owner" || (!path.startsWith("clientes/") && !path.startsWith("admin/")) || path === "clientes/" + uid;
+  const canWrite = path => role === "owner" || (role === "client" && (path === "clientes/" + uid || path === "mensagens/" + uid));
+  const canRead = path => role === "owner" || (!path.startsWith("clientes/") && !path.startsWith("admin/") && !path.startsWith("mensagens/")) || path === "clientes/" + uid || path === "mensagens/" + uid;
   const err = () => Promise.reject({ code: "invalid_argument", message: "denied" });
   function doc(path) {
     return {
@@ -424,6 +424,13 @@ section.block { padding-block: clamp(48px, 7vw, 96px); }
 .f input:focus, .f select:focus, .f textarea:focus { border-color: var(--ink); outline: none; box-shadow: 0 0 0 3px rgba(18,18,20,.08); }
 .check { display: inline-flex; align-items: flex-start; gap: 10px; font-size: 16px; color: var(--ink); }
 .check input { margin-top: 3px; width: 20px; height: 20px; accent-color: var(--ink); flex: none; }
+.ct-count { justify-self: end; font-size: 13px; }
+.ct-done { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px 16px; align-items: center; }
+.ct-done[hidden] { display: none; }
+.ct-done .ok-ic { width: 48px; height: 48px; border-radius: 50%; background: #16a34a; color: #fff; display: grid; place-items: center; font-size: 24px; font-weight: 800; }
+.ct-done b { display: block; font-size: 22px; }
+.ct-done .actions { grid-column: 1 / -1; }
+#ct-send[disabled] { opacity: .45; cursor: not-allowed; }
 .actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
 /* minha conta */
 /* minha conta abre como tela própria, por cima da loja */
@@ -848,13 +855,41 @@ footer.foot .linkbtn:hover { color: #fff; }
       </div>
     </div>
   </section>
+  <section class="block" id="contato" aria-labelledby="t-contato" style="padding-top:0">
+    <div class="wrap about">
+      <div>
+        <div class="eyebrow">Fale com a gente</div>
+        <h2 id="t-contato" class="big-h" style="margin-top:10px">Contato</h2>
+        <p class="note">Dúvida sobre uma peça, tamanho, troca ou encomenda? Mande sua mensagem que a loja responde no seu e-mail.</p>
+      </div>
+      <div class="box">
+        <form id="ct-form" novalidate>
+          <div class="fields">
+            <div class="f"><label for="ct-name">Nome</label><input id="ct-name" autocomplete="name" maxlength="80" required></div>
+            <div class="f"><label for="ct-email">E-mail</label><input id="ct-email" type="email" autocomplete="email" maxlength="120" required></div>
+          </div>
+          <div class="f" style="margin-top:14px"><label for="ct-text">Mensagem</label><textarea id="ct-text" rows="5" maxlength="1000" required></textarea><span class="ct-count msg" id="ct-count">0/1000</span></div>
+          <label class="check" style="margin-top:16px"><input type="checkbox" id="ct-consent"> <span>Estou ciente e concordo com o tratamento dos meus dados conforme a <a href="#privacidade">Política de Privacidade</a> deste site</span></label>
+          <div class="actions" style="margin-top:16px">
+            <button class="btn red big" type="submit" id="ct-send" disabled>Enviar mensagem</button>
+            <span class="msg" id="ct-msg" role="status"></span>
+          </div>
+        </form>
+        <div class="ct-done" id="ct-done" hidden role="status">
+          <span class="ok-ic" aria-hidden="true">✓</span>
+          <div><b>Mensagem enviada!</b><span id="ct-done-t">A loja vai responder no seu e-mail.</span></div>
+          <div class="actions"><a class="btn wa" id="ct-wa" target="_blank" rel="noopener" href="#">Mandar também no WhatsApp</a><button class="btn" type="button" id="ct-new">Escrever outra</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer class="foot">
   <div class="wrap">
     <div class="cols">
       <div><h4>Etiketa Urbana</h4><p>Moda masculina<br>Rua Urbano Romano Meirelles, 51<br>Vila Nova, Porto Ferreira, SP</p></div>
-      <div><h4>Ajuda</h4><a href="#como-comprar">Como comprar</a><a href="#loja">Horário e endereço</a><a href="#conta">Minha conta</a><a href="#carrinho">Meu carrinho</a><a href="#privacidade">Política de Privacidade</a><button class="linkbtn" type="button" id="ck-prefs">Preferências de cookies</button></div>
+      <div><h4>Ajuda</h4><a href="#como-comprar">Como comprar</a><a href="#loja">Horário e endereço</a><a href="#conta">Minha conta</a><a href="#carrinho">Meu carrinho</a><a href="#contato">Fale conosco</a><a href="#privacidade">Política de Privacidade</a><button class="linkbtn" type="button" id="ck-prefs">Preferências de cookies</button></div>
       <div><h4>Siga</h4><a href="https://www.instagram.com/etiketaurbanaoficial/" target="_blank" rel="noopener">Instagram @etiketaurbanaoficial</a><a id="foot-wa" target="_blank" rel="noopener" href="#">WhatsApp da loja</a></div>
     </div>
     <div class="base"><span>© Etiketa Urbana · Porto Ferreira, SP</span><span>Pedidos fechados pelo WhatsApp da loja</span></div>
@@ -1709,6 +1744,42 @@ $("#priv-close").addEventListener("click", closePolicy);
 renderCk();
 if (ckGet() && ckGet().choice === "all") loadTrackers();
 
+/* ---------- formulário de contato (só envia com a concordância marcada) ---------- */
+const ctLog = []; let ctFilled = false;
+function ctUpdate() {
+  const n = $("#ct-text").value.length; $("#ct-count").textContent = n + "/1000";
+  $("#ct-send").disabled = !$("#ct-consent").checked;
+}
+["input", "change"].forEach(ev => $("#ct-form").addEventListener(ev, ctUpdate));
+$("#ct-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const msg = $("#ct-msg"); msg.classList.add("err");
+  if (!$("#ct-consent").checked) { msg.textContent = "Marque a caixa de concordância para enviar."; return; }
+  const name = clean($("#ct-name").value, 80), email = clean($("#ct-email").value, 120).toLowerCase(), text = clean($("#ct-text").value, 1000);
+  if (name.length < 2) { msg.textContent = "Coloque seu nome."; $("#ct-name").focus(); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { msg.textContent = "Confira o e-mail."; $("#ct-email").focus(); return; }
+  if (text.length < 5) { msg.textContent = "Escreva sua mensagem."; $("#ct-text").focus(); return; }
+  const now = Date.now();
+  while (ctLog.length && now - ctLog[0] > 600000) ctLog.shift();
+  if (ctLog.length >= 3) { msg.textContent = "Você já mandou várias mensagens. Tente de novo em alguns minutos."; return; }
+  if (!DB || !UID) { msg.textContent = "Não foi possível enviar agora. Chame a loja no WhatsApp."; return; }
+  msg.classList.remove("err"); msg.textContent = "Enviando…"; $("#ct-send").disabled = true;
+  const item = { id: "m" + now.toString(36), name, email, text, consent: true, consentText: "Estou ciente e concordo com o tratamento dos meus dados conforme a Política de Privacidade deste site", at: new Date(now).toISOString(), read: false };
+  try {
+    const ref = DB.doc("mensagens/" + UID), cur = await ref.get();
+    const items = cur.exists && Array.isArray((cur.data() || {}).items) ? cur.data().items.slice(-19) : [];
+    await ref.set({ items: [...items, item], updatedAt: item.at });
+  } catch (err) { msg.classList.add("err"); msg.textContent = "Não foi possível enviar agora. Tente de novo ou chame no WhatsApp."; ctUpdate(); return; }
+  ctLog.push(now);
+  const n = waNumber();
+  $("#ct-wa").hidden = !n;
+  if (n) $("#ct-wa").href = "https://wa.me/" + n + "?text=" + encodeURIComponent("Olá, Etiketa Urbana! Sou " + name + " (" + email + ").\n\n" + text);
+  $("#ct-done-t").textContent = "A loja vai responder no e-mail " + email + ".";
+  $("#ct-form").hidden = true; $("#ct-done").hidden = false; msg.textContent = "";
+  $("#ct-form").reset(); ctUpdate();
+});
+$("#ct-new").addEventListener("click", () => { $("#ct-done").hidden = true; $("#ct-form").hidden = false; $("#ct-name").focus(); });
+
 /* ---------- contato ---------- */
 function renderFab() {
   const n = waNumber(), fab = $("#wafab"); fab.hidden = !n; if (!n) return;
@@ -1868,6 +1939,7 @@ function renderAccount() {
   const state = $("#acc-state"), form = $("#acc-form");
   if (!meLoaded) return;
   renderVerify();
+  if (me && !ctFilled && !$("#ct-name").value && !$("#ct-email").value && document.activeElement?.closest?.("#ct-form") == null) { $("#ct-name").value = me.name || ""; $("#ct-email").value = me.email || ""; ctFilled = true; }
   const has = !!(DB && UID && me);
   $("#acc-guest").hidden = has; $("#acc-dash").hidden = !has;
   document.querySelectorAll('a[href="#conta"]').forEach(a => { if (a.closest("header, .mnav")) a.textContent = has ? "Olá, " + (String(me.name || "").split(" ")[0] || "cliente") : "Minha conta"; });
