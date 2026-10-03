@@ -669,7 +669,10 @@ body.priv-open .ckbar { display: none; }
 .policy .dpo div { display: grid; grid-template-columns: 110px 1fr; gap: 10px; align-items: baseline; font-size: 17px; }
 .policy .dpo span { color: var(--muted); font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; }
 .policy .dpo b { overflow-wrap: anywhere; }
-.policy .lead { font-size: 18px; }
+.check .opt { color: var(--muted); font-weight: 600; }
+.acct-export { margin-top: 18px; display: grid; gap: 10px; }
+.acct-export textarea { width: 100%; min-height: 200px; font-family: var(--f-mono); font-size: 13px; line-height: 1.5; border: 1px solid var(--line); border-radius: 8px; padding: 12px; background: var(--surface); color: var(--ink); resize: vertical; }
+.acct-export .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 @media (max-width: 520px) { .policy .dpo div { grid-template-columns: 1fr; gap: 2px; } }
 footer.foot .linkbtn { display: block; background: none; border: 0; padding: 4px 0; font: inherit; color: #b9b9bf; cursor: pointer; text-align: left; }
 footer.foot .linkbtn:hover { color: #fff; }
@@ -794,7 +797,8 @@ footer.foot .linkbtn:hover { color: #fff; }
             <div class="f"><label for="acc-email">E-mail</label><input id="acc-email" type="email" autocomplete="email" maxlength="120"></div>
             <div class="f"><label for="acc-wa">WhatsApp</label><input id="acc-wa" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="(19) 90000-0000"></div>
           </div>
-          <label class="check" style="margin-top:16px"><input type="checkbox" id="acc-consent"> Aceito que a Etiketa Urbana use estes dados para falar comigo sobre novidades e pedidos. <a href="#privacidade">Política de Privacidade</a></label>
+          <label class="check" style="margin-top:16px"><input type="checkbox" id="acc-terms"> <span>Li e aceito os <a href="#termos">Termos de Uso</a> e a <a href="#privacidade">Política de Privacidade</a>.</span></label>
+          <label class="check" style="margin-top:10px"><input type="checkbox" id="acc-consent"> <span>Quero receber novidades e promoções da Etiketa Urbana pelo WhatsApp e e-mail. <span class="opt">(opcional)</span></span></label>
           <div class="actions" style="margin-top:16px">
             <button class="btn red big" type="submit" id="acc-save">Criar minha conta</button>
             <button class="btn big" type="button" id="acc-cancel" hidden>Cancelar</button>
@@ -834,7 +838,9 @@ footer.foot .linkbtn:hover { color: #fff; }
             <div class="acct-card-h"><h3>Meus dados</h3><button class="btn" type="button" id="acc-edit">Editar dados</button></div>
             <dl class="acct-dl" id="acc-dl"></dl>
             <div id="acc-form-slot"></div>
-            <div class="acct-danger"><button class="btn danger" type="button" id="acc-del">Apagar meu cadastro</button><span class="msg">Apaga seus dados, pedidos e avisos guardados no site.</span></div>
+            <div class="acct-export"><div class="row"><button class="btn" type="button" id="acc-export">Baixar meus dados</button><span class="msg">Uma cópia de tudo que a loja guarda sobre você (LGPD, art. 18).</span></div>
+              <div id="acc-export-box" hidden><textarea id="acc-export-txt" readonly aria-label="Meus dados"></textarea><div class="row"><a class="btn red" id="acc-export-dl" download="meus-dados-etiketa-urbana.json" href="#">Salvar arquivo</a><button class="btn" type="button" id="acc-export-copy">Copiar</button></div></div></div>
+            <div class="acct-danger"><button class="btn danger" type="button" id="acc-del">Apagar meu cadastro</button><span class="msg">Apaga seus dados, pedidos, avisos e mensagens guardados no site.</span></div>
           </div>
         </div>
       </div>
@@ -938,7 +944,8 @@ footer.foot .linkbtn:hover { color: #fff; }
           <div class="f"><label for="who-name">Nome completo</label><input id="who-name" autocomplete="name" maxlength="80"></div>
           <div class="f"><label for="who-wa">WhatsApp com DDD</label><input id="who-wa" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="(19) 90000-0000"></div>
           <div class="f"><label for="who-email">E-mail</label><input id="who-email" type="email" autocomplete="email" maxlength="120"></div>
-          <label class="check"><input type="checkbox" id="who-consent"> Aceito que a Etiketa Urbana use estes dados para falar comigo sobre pedidos e novidades. <a href="#privacidade">Política de Privacidade</a></label>
+          <label class="check"><input type="checkbox" id="who-terms"> <span>Li e aceito os <a href="#termos">Termos de Uso</a> e a <a href="#privacidade">Política de Privacidade</a>.</span></label>
+          <label class="check"><input type="checkbox" id="who-consent"> <span>Quero receber novidades e promoções da Etiketa Urbana pelo WhatsApp e e-mail. <span class="opt">(opcional)</span></span></label>
           <button class="btn red big block" type="submit" id="who-save">Cadastrar e continuar</button>
           <span class="msg" id="who-msg" role="alert"></span>
         </form>
@@ -981,7 +988,8 @@ footer.foot .linkbtn:hover { color: #fff; }
     <p><b>Etiketa Urbana</b><span class="cnpj-line" hidden>, CNPJ <span class="cnpj-v"></span></span>, loja de moda masculina, Rua Urbano Romano Meirelles, 51, Vila Nova, Porto Ferreira/SP, CEP 13660-186. A loja é a <b>controladora</b> dos dados, ou seja, quem decide como eles são usados. Contato da loja: <a class="priv-wa" id="priv-wa" target="_blank" rel="noopener" href="https://wa.me/5519998984448">WhatsApp (19) 99898-4448</a>.</p>
     <h3>2. Quais dados coletamos</h3>
     <ul>
-      <li><b>Cadastro:</b> nome, e-mail e WhatsApp, informados por você em "Minha conta" ou no carrinho.</li>
+      <li><b>Cadastro:</b> nome, e-mail e WhatsApp, informados por você em "Minha conta" ou no carrinho, e a data em que você aceitou os Termos de Uso e esta política.</li>
+      <li><b>Fale conosco:</b> nome, e-mail e a mensagem que você escrever, com o registro da sua concordância.</li>
       <li><b>Pedidos:</b> peças, tamanhos, quantidades, valores e forma de pagamento escolhida. O pagamento não é feito no site; nenhum dado de cartão é coletado.</li>
       <li><b>Preferências:</b> favoritos, avisos de "quando chegar", carrinho e peças vistas recentemente.</li>
       <li><b>Dados de uso (só com seu consentimento):</b> páginas visitadas e cliques, de forma estatística, para melhorar o site.</li>
@@ -990,7 +998,10 @@ footer.foot .linkbtn:hover { color: #fff; }
     <ul>
       <li>Montar e enviar seu pedido pelo WhatsApp da loja e acompanhar a situação dele (execução de contrato).</li>
       <li>Avisar quando uma peça que você pediu voltar ao estoque (seu pedido).</li>
-      <li>Falar com você sobre pedidos e novidades, quando você marca a autorização no cadastro (consentimento).</li>
+      <li>Responder as mensagens enviadas pelo Fale conosco (seu pedido e consentimento).</li>
+      <li>Confirmar seu e-mail com um link, quando essa função estiver ligada (segurança da conta).</li>
+      <li>Falar com você sobre o seu pedido (execução de contrato).</li>
+      <li>Enviar novidades e promoções, só se você marcar a opção no cadastro. É opcional, não interfere na compra e pode ser desmarcada em Meus dados a qualquer momento (consentimento).</li>
       <li>Manter o site seguro e evitar abusos, como cadastros em massa (legítimo interesse).</li>
       <li>Medir o uso do site, apenas se você clicar em "Aceitar todos" no aviso de cookies (consentimento).</li>
     </ul>
@@ -999,24 +1010,32 @@ footer.foot .linkbtn:hover { color: #fff; }
     <p><b>Estatística e marketing:</b> ferramentas como Google Analytics ou pixels de anúncios. Ficam <b>bloqueadas</b> e só são carregadas depois que você clica em "Aceitar todos". Se você rejeitar, nada disso é carregado.</p>
     <div class="box">Sua escolha atual: <b id="priv-choice">ainda não escolhida</b>.<div class="acts"><button class="btn" type="button" data-ck="reject">Rejeitar cookies opcionais</button><button class="btn red" type="button" data-ck="accept">Aceitar todos</button></div></div>
     <h3>5. Com quem compartilhamos</h3>
-    <p>Não vendemos seus dados. Eles ficam guardados no serviço de hospedagem do site e são usados apenas pela equipe da loja. Quando você envia um pedido, a mensagem é aberta no WhatsApp, que tem a própria política de privacidade. Se você aceitar os cookies opcionais, os serviços de estatística recebem dados de navegação de forma agregada.</p>
+    <p>Não vendemos seus dados. Eles são usados apenas pela equipe da loja e só passam por serviços necessários para o site funcionar:</p>
+    <ul>
+      <li><b>Hospedagem e banco de dados</b> do site, onde o cadastro e os pedidos ficam guardados.</li>
+      <li><b>WhatsApp</b>, quando você envia um pedido ou fala com a loja. Ele tem a própria política de privacidade.</li>
+      <li><b>Envio de e-mail</b>, para o link de confirmação de cadastro, quando essa função estiver ligada.</li>
+      <li><b>Google Fonts</b>, que entrega as fontes do site e recebe o endereço de internet (IP) do seu aparelho.</li>
+      <li><b>Estatística e anúncios</b>, apenas se você aceitar os cookies opcionais, com dados de navegação agregados.</li>
+    </ul>
+    <p>Alguns desses serviços ficam fora do Brasil. Nesses casos, usamos empresas que adotam padrões de proteção compatíveis com a LGPD (art. 33). Também podemos informar dados a autoridades quando a lei exigir.</p>
     <h3>6. Por quanto tempo guardamos</h3>
-    <p>Enquanto sua conta existir. Você pode apagar seu cadastro a qualquer momento em Minha conta, Meus dados, "Apagar meu cadastro", que remove seus dados, pedidos e avisos guardados no site. Podemos manter o mínimo exigido por lei, como registros de vendas.</p>
+    <p>Enquanto sua conta existir. Você pode apagar seu cadastro a qualquer momento em Minha conta, Meus dados, "Apagar meu cadastro", que remove seus dados, pedidos, avisos e mensagens guardados no site. Podemos manter o mínimo exigido por lei, como registros de vendas.</p>
     <h3>7. Seus direitos</h3>
     <p>Pela LGPD (art. 18), você pode pedir a qualquer momento, sem custo:</p>
     <ul>
-      <li><b>Confirmação e acesso:</b> saber se tratamos seus dados e receber uma cópia deles.</li>
+      <li><b>Confirmação e acesso:</b> saber se tratamos seus dados e receber uma cópia deles. No site, é só tocar em "Baixar meus dados" em Minha conta, Meus dados.</li>
       <li><b>Correção:</b> arrumar dados errados ou desatualizados.</li>
       <li><b>Anonimização, bloqueio ou exclusão:</b> de dados desnecessários ou tratados em desacordo com a lei.</li>
       <li><b>Portabilidade:</b> levar seus dados para outro fornecedor.</li>
       <li><b>Exclusão dos dados tratados com seu consentimento.</b></li>
       <li><b>Informação:</b> saber com quem compartilhamos seus dados e o que acontece se você não der o consentimento.</li>
-      <li><b>Revogação do consentimento:</b> desmarcar autorizações a qualquer momento.</li>
+      <li><b>Revogação do consentimento:</b> desmarcar autorizações a qualquer momento, como a de novidades em Meus dados, "Editar dados", ou a de cookies em "Preferências de cookies" no rodapé.</li>
     </ul>
     <p>Respondemos em até 15 dias. Se não ficar satisfeito, você também pode reclamar à Autoridade Nacional de Proteção de Dados (ANPD), em <a href="https://www.gov.br/anpd" target="_blank" rel="noopener">gov.br/anpd</a>.</p>
     <h3>8. Como pedir a exclusão dos seus dados</h3>
     <ol class="lsteps">
-      <li><b>Pelo próprio site, na hora:</b> entre em <a href="#conta">Minha conta</a>, abra "Meus dados" e toque em "Apagar meu cadastro". Seus dados, pedidos e avisos guardados no site são apagados.</li>
+      <li><b>Pelo próprio site, na hora:</b> entre em <a href="#conta">Minha conta</a>, abra "Meus dados" e toque em "Apagar meu cadastro". Seus dados, pedidos, avisos e mensagens guardados no site são apagados.</li>
       <li><b>Ou peça para a loja:</b> mande um e-mail para o Encarregado de Dados (item 9) ou uma mensagem no WhatsApp com o assunto "Excluir meus dados", informando o nome e o e-mail do cadastro.</li>
       <li><b>Confirmação:</b> para sua segurança, podemos pedir uma confirmação de que o pedido é seu. Depois disso, a exclusão é feita e você recebe a resposta em até 15 dias.</li>
     </ol>
@@ -1028,9 +1047,11 @@ footer.foot .linkbtn:hover { color: #fff; }
       <div><span>E-mail</span><b class="dpo-mail"><a class="priv-wa" target="_blank" rel="noopener" href="https://wa.me/5519998984448">WhatsApp (19) 99898-4448</a></b></div>
       <div><span>Endereço</span><b>Rua Urbano Romano Meirelles, 51, Vila Nova, Porto Ferreira/SP</b></div>
     </div>
-    <h3>10. Segurança</h3>
+    <h3>10. Menores de idade</h3>
+    <p>O cadastro e as compras pelo site são para maiores de 18 anos. Menores podem comprar com a ajuda e o cadastro de um responsável. Se soubermos que um menor se cadastrou sem o responsável, apagamos os dados.</p>
+    <h3>11. Segurança</h3>
     <p>Usamos conexão segura, limite de tentativas contra robôs, limpeza dos dados digitados e acesso restrito ao painel da loja por senha. Nenhum sistema é 100% imune, mas trabalhamos para proteger suas informações.</p>
-    <h3>11. Mudanças nesta política</h3>
+    <h3>12. Mudanças nesta política</h3>
     <p>Se esta política mudar, a data no topo é atualizada e, quando a mudança for importante, pediremos sua escolha de novo.</p>
   </article>
 </section>
@@ -1069,6 +1090,8 @@ footer.foot .linkbtn:hover { color: #fff; }
     </ul>
     <h3>7. Sua conta</h3>
     <ul>
+      <li>O cadastro é para maiores de 18 anos. Menores podem comprar com um responsável.</li>
+      <li>Ao criar a conta você marca que aceita estes termos e a Política de Privacidade. Receber novidades é opcional.</li>
       <li>Use dados verdadeiros e mantenha seu cadastro atualizado, para que a loja consiga falar com você sobre o pedido.</li>
       <li>A conta é pessoal. Você responde pelos pedidos feitos com ela.</li>
       <li>Você pode apagar sua conta quando quiser em Minha conta, Meus dados, "Apagar meu cadastro".</li>
@@ -2010,13 +2033,14 @@ window.addEventListener("focus", () => refreshVerify());
 
 /* ---------- cadastro (obrigatório para enviar o pedido) ---------- */
 const saveLog = [];
-async function saveAccount(name, email, waRaw, consent) {
+const TERMS_VER = "2026-10-03";
+async function saveAccount(name, email, waRaw, consent, terms) {
   name = clean(name, 80); email = clean(email, 120).toLowerCase();
   const wa = String(waRaw || "").replace(/\D/g, "").slice(0, 13);
   if (name.length < 2) return "Coloque seu nome.";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return "Confira o e-mail.";
   if (wa.length < 10 || wa.length > 13) return "Coloque o WhatsApp com DDD.";
-  if (!consent) return "Marque a autorização para salvar.";
+  if (!terms) return "Para continuar, aceite os Termos de Uso e a Política de Privacidade.";
   if (!myRef) return "Não foi possível salvar agora. Tente de novo.";
   // Proteção contra envios em sequência (robôs ou cliques repetidos).
   const now = Date.now();
@@ -2026,7 +2050,8 @@ async function saveAccount(name, email, waRaw, consent) {
   saveLog.push(now);
   const iso = new Date().toISOString();
   try {
-    await myRef.set({ name, email, whatsapp: wa, consent: true, favs: favList(), orders: myOrders(), alerts: myAlerts(), createdAt: (me && me.createdAt) || iso, updatedAt: iso });
+    const mk = !!consent, was = !!(me && me.consent);
+    await myRef.set({ name, email, whatsapp: wa, consent: mk, consentAt: mk ? (was && me.consentAt) || iso : null, termsAt: (me && me.termsAt) || iso, termsVersion: TERMS_VER, favs: favList(), orders: myOrders(), alerts: myAlerts(), createdAt: (me && me.createdAt) || iso, updatedAt: iso });
     me = (await myRef.get()).data() || me; accFilled = false;
     renderAccount(); renderCart();
     if (verifyOn) startVerify(false);
@@ -2108,13 +2133,13 @@ function renderAccount() {
     : '<div class="acct-empty">Toque no coração de uma peça para guardar aqui.<button class="btn" type="button" data-accshop>Ver as peças</button></div>';
   $("#acc-alerts").innerHTML = alerts.length ? alerts.map(a => { const p = find(a.id); return '<li><span class="th">' + thumbHTML(p) + '</span><span class="grow"><b>' + esc(p.name) + '</b><span>' + (a.size ? 'Tamanho ' + esc(a.size) + ' · ' : '') + (soldOut(p) || (a.size && stockOf(p, a.size) <= 0) ? 'Esperando chegar' : 'Já chegou! Corra para garantir') + '</span></span><button class="btn sm" type="button" data-rmalert="' + esc(a.id) + '" data-size="' + esc(a.size || "") + '">Cancelar</button></li>'; }).join("")
     : '<li class="acct-empty" style="border:0;padding:0">Nenhum aviso ativo. Na página de uma peça esgotada, toque em "Avise-me quando chegar".</li>';
-  $("#acc-dl").innerHTML = '<dt>Nome</dt><dd>' + esc(me.name || "") + '</dd><dt>E-mail</dt><dd>' + esc(me.email || "") + '</dd><dt>WhatsApp</dt><dd>' + esc(waText(me.whatsapp)) + '</dd><dt>Novidades</dt><dd>' + (me.consent ? "Aceito receber" : "Não") + '</dd>';
+  $("#acc-dl").innerHTML = '<dt>Nome</dt><dd>' + esc(me.name || "") + '</dd><dt>E-mail</dt><dd>' + esc(me.email || "") + '</dd><dt>WhatsApp</dt><dd>' + esc(waText(me.whatsapp)) + '</dd><dt>Novidades</dt><dd>' + (me.consent ? "Aceito receber" : "Não quero receber") + '</dd>';
   if (form.parentElement !== $("#acc-form-slot")) $("#acc-form-slot").appendChild(form);
   form.hidden = !accEditing; $("#acc-dl").hidden = accEditing; $("#acc-edit").hidden = accEditing; $("#acc-cancel").hidden = false;
   $("#acc-save").textContent = "Salvar alterações";
   if (!accFilled) {
     $("#acc-name").value = me.name || ""; $("#acc-email").value = me.email || "";
-    $("#acc-wa").value = me.whatsapp || ""; $("#acc-consent").checked = !!me.consent; accFilled = true;
+    $("#acc-wa").value = me.whatsapp || ""; $("#acc-consent").checked = !!me.consent; $("#acc-terms").checked = true; accFilled = true;
   }
   showAccTab(accTab);
 }
@@ -2167,7 +2192,7 @@ $("#acc-cancel").addEventListener("click", () => { accEditing = false; accFilled
 $("#acc-form").addEventListener("submit", async e => {
   e.preventDefault();
   const msg = $("#acc-msg"); msg.classList.remove("err"); msg.textContent = "Salvando…";
-  const err = await saveAccount($("#acc-name").value, $("#acc-email").value, $("#acc-wa").value, $("#acc-consent").checked);
+  const err = await saveAccount($("#acc-name").value, $("#acc-email").value, $("#acc-wa").value, $("#acc-consent").checked, $("#acc-terms").checked);
   if (err) { msg.classList.add("err"); msg.textContent = err; return; }
   const wasNew = !accEditing; accEditing = false; msg.textContent = ""; renderAccount();
   if (!verifyOn || !needsVerify()) toast(wasNew ? "Conta criada. Bem-vindo à Etiketa Urbana!" : "Dados atualizados");
@@ -2175,7 +2200,7 @@ $("#acc-form").addEventListener("submit", async e => {
 $("#who-form").addEventListener("submit", async e => {
   e.preventDefault();
   const msg = $("#who-msg"); msg.classList.remove("err"); msg.textContent = "Salvando…";
-  const err = await saveAccount($("#who-name").value, $("#who-email").value, $("#who-wa").value, $("#who-consent").checked);
+  const err = await saveAccount($("#who-name").value, $("#who-email").value, $("#who-wa").value, $("#who-consent").checked, $("#who-terms").checked);
   if (err) { msg.classList.add("err"); msg.textContent = err; return; }
   msg.textContent = ""; if (!verifyOn) toast("Cadastro feito. Agora é só enviar o pedido!");
 });
@@ -2193,8 +2218,45 @@ $("#acc-del").addEventListener("click", async e => {
     setTimeout(() => { b.dataset.confirm = ""; b.textContent = "Apagar meu cadastro"; }, 4000);
     return;
   }
-  try { await myRef.delete(); me = null; accFilled = false; $("#acc-form").reset(); renderAccount(); renderGrid(); renderCart(); toast("Cadastro apagado"); }
+  try {
+    await myRef.delete();
+    if (DB && UID) { try { await DB.doc("mensagens/" + UID).delete(); } catch (e2) {} }
+    try { localStorage.removeItem("eu-verify"); } catch (e2) {}
+    $("#acc-export-box").hidden = true; $("#acc-export-txt").value = "";
+    me = null; accFilled = false; $("#acc-form").reset(); renderAccount(); renderGrid(); renderCart(); toast("Cadastro apagado"); }
   catch (err) { toast(accError(err)); }
+});
+
+let exportUrl = "";
+$("#acc-export").addEventListener("click", async () => {
+  if (!me) return;
+  let msgs = [];
+  if (DB && UID) { try { const m = await DB.doc("mensagens/" + UID).get(); if (m.exists) msgs = (m.data().items || []).map(x => ({ nome: x.name, email: x.email, mensagem: x.text, enviadaEm: x.at, concordancia: x.consentText || "" })); } catch (e) {} }
+  const ls = k => { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } };
+  const data = {
+    loja: "Etiketa Urbana", geradoEm: new Date().toISOString(),
+    cadastro: { nome: me.name, email: me.email, whatsapp: me.whatsapp, criadoEm: me.createdAt, atualizadoEm: me.updatedAt, aceitouTermosEm: me.termsAt || "", aceitaNovidades: !!me.consent },
+    pedidos: myOrders(), favoritos: favList(), avisosDeReposicao: myAlerts(), mensagensDeContato: msgs,
+    neste_aparelho: { escolhaDeCookies: ls("eu-cookies") },
+  };
+  const txt = JSON.stringify(data, null, 2);
+  $("#acc-export-txt").value = txt; $("#acc-export-box").hidden = false;
+  if (exportUrl) URL.revokeObjectURL(exportUrl);
+  exportUrl = URL.createObjectURL(new Blob([txt], { type: "application/json" })); $("#acc-export-dl").href = exportUrl;
+});
+// No claude.ai o arquivo é entregue pela permissão "downloads"; fora dele, o link normal baixa.
+let dlCap = null;
+Promise.resolve(window.loja?.use("downloads") ?? null).then(d => { dlCap = d; }, () => {});
+$("#acc-export-dl").addEventListener("click", async e => {
+  const dl = dlCap; if (!dl) return;
+  e.preventDefault();
+  try { await dl.save({ filename: "meus-dados-etiketa-urbana.json", data: $("#acc-export-txt").value }); toast("Arquivo salvo"); }
+  catch (err) { if (err && err.code !== "declined") toast("Não deu para salvar aqui. Use o botão Copiar."); }
+});
+$("#acc-export-copy").addEventListener("click", async () => {
+  const t = $("#acc-export-txt");
+  try { await navigator.clipboard.writeText(t.value); toast("Dados copiados"); }
+  catch (e) { t.select(); try { document.execCommand("copy"); toast("Dados copiados"); } catch (e2) { toast("Selecione o texto e copie"); } }
 });
 
 /* ---------- início ---------- */
