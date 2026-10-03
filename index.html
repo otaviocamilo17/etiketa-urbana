@@ -2244,7 +2244,7 @@ $("#acc-export").addEventListener("click", async () => {
   if (exportUrl) URL.revokeObjectURL(exportUrl);
   exportUrl = URL.createObjectURL(new Blob([txt], { type: "application/json" })); $("#acc-export-dl").href = exportUrl;
 });
-// No claude.ai o arquivo é entregue pela permissão "downloads"; fora dele, o link normal baixa.
+// Na plataforma o arquivo é entregue pela permissão "downloads"; fora dela, o link normal baixa.
 let dlCap = null;
 Promise.resolve(window.loja?.use("downloads") ?? null).then(d => { dlCap = d; }, () => {});
 $("#acc-export-dl").addEventListener("click", async e => {
