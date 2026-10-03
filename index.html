@@ -56,7 +56,7 @@
   };
   window.loja = { use: async name => {  if (role === "anon" && name !== "user") return null; return { db, assets: role === "owner" ? assets : null, user }[name] ?? null; } };
 })();
-</script></head><body><title>Etiketa Urbana</title>
+</script></head><body><div role="note" style="background:#fff;color:#b3121c;border-bottom:1px solid #e5e5e5;font:700 14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;text-align:center;padding:9px 16px">Site de demonstração: preços, promoções e algumas fotos são exemplos. Pedidos feitos aqui não valem como compra.</div><title>Etiketa Urbana</title>
 <meta name="description" content="Etiketa Urbana, moda masculina em Porto Ferreira (SP). Rua Urbano Romano Meirelles, 51, Vila Nova.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -910,7 +910,7 @@ footer.foot .linkbtn:hover { color: #fff; }
 <footer class="foot">
   <div class="wrap">
     <div class="cols">
-      <div><h4>Etiketa Urbana</h4><p>Moda masculina<br>Rua Urbano Romano Meirelles, 51<br>Vila Nova, Porto Ferreira, SP</p></div>
+      <div><h4>Etiketa Urbana</h4><p>Moda masculina<br>Rua Urbano Romano Meirelles, 51<br>Vila Nova, Porto Ferreira, SP<span class="cnpj-foot" hidden><br><span class="razao-f"></span>CNPJ <span class="cnpj-v"></span></span></p></div>
       <div><h4>Ajuda</h4><a href="#como-comprar">Como comprar</a><a href="#loja">Horário e endereço</a><a href="#conta">Minha conta</a><a href="#carrinho">Meu carrinho</a><a href="#contato">Fale conosco</a><a href="#privacidade">Política de Privacidade</a><a href="#termos">Termos de Uso</a><button class="linkbtn" type="button" id="ck-prefs">Preferências de cookies</button></div>
       <div><h4>Siga</h4><a href="https://www.instagram.com/etiketaurbanaoficial/" target="_blank" rel="noopener">Instagram @etiketaurbanaoficial</a><a id="foot-wa" target="_blank" rel="noopener" href="#">WhatsApp da loja</a></div>
     </div>
@@ -1003,7 +1003,7 @@ footer.foot .linkbtn:hover { color: #fff; }
       </ul>
     </div>
     <h3>1. Quem cuida dos seus dados</h3>
-    <p><b>Etiketa Urbana</b><span class="cnpj-line" hidden>, CNPJ <span class="cnpj-v"></span></span>, loja de moda masculina, Rua Urbano Romano Meirelles, 51, Vila Nova, Porto Ferreira/SP, CEP 13660-186. A loja é a <b>controladora</b> dos dados, ou seja, quem decide como eles são usados. Contato da loja: <a class="priv-wa" id="priv-wa" target="_blank" rel="noopener" href="https://wa.me/5519998984448">WhatsApp (19) 99898-4448</a>.</p>
+    <p><b>Etiketa Urbana</b><span class="cnpj-line" hidden>, <span class="razao-v"></span>CNPJ <span class="cnpj-v"></span></span>, loja de moda masculina, Rua Urbano Romano Meirelles, 51, Vila Nova, Porto Ferreira/SP, CEP 13660-186. A loja é a <b>controladora</b> dos dados, ou seja, quem decide como eles são usados. Contato da loja: <a class="priv-wa" id="priv-wa" target="_blank" rel="noopener" href="https://wa.me/5519998984448">WhatsApp (19) 99898-4448</a>.</p>
     <h3>2. Quais dados coletamos</h3>
     <ul>
       <li><b>Cadastro:</b> nome, e-mail e WhatsApp, informados por você em "Minha conta" ou no carrinho, e a data em que você aceitou os Termos de Uso e esta política.</li>
@@ -1083,7 +1083,7 @@ footer.foot .linkbtn:hover { color: #fff; }
     <p class="upd">Atualizados em 3 de outubro de 2026</p>
     <p>Bem-vindo ao site da Etiketa Urbana. Ao navegar, criar uma conta ou enviar um pedido, você concorda com estes termos. Eles foram escritos de forma simples e não tiram nenhum direito que você tem pelo Código de Defesa do Consumidor (CDC). Como tratamos seus dados está explicado na <a href="#privacidade">Política de Privacidade</a>.</p>
     <h3>1. Quem somos</h3>
-    <p><b>Etiketa Urbana</b><span class="cnpj-line" hidden>, CNPJ <span class="cnpj-v"></span></span>, loja de moda masculina, Rua Urbano Romano Meirelles, 51, Vila Nova, Porto Ferreira/SP, CEP 13660-186. Atendimento: <a class="priv-wa" target="_blank" rel="noopener" href="https://wa.me/5519998984448">WhatsApp (19) 99898-4448</a>, de segunda a sexta das 10h às 18h30 e aos sábados das 10h às 15h.</p>
+    <p><b>Etiketa Urbana</b><span class="cnpj-line" hidden>, <span class="razao-v"></span>CNPJ <span class="cnpj-v"></span></span>, loja de moda masculina, Rua Urbano Romano Meirelles, 51, Vila Nova, Porto Ferreira/SP, CEP 13660-186. Atendimento: <a class="priv-wa" target="_blank" rel="noopener" href="https://wa.me/5519998984448">WhatsApp (19) 99898-4448</a>, de segunda a sexta das 10h às 18h30 e aos sábados das 10h às 15h.</p>
     <h3>2. Como funciona o pedido</h3>
     <ol class="lsteps">
       <li>Você escolhe as peças, tamanhos e a forma de pagamento e envia o pedido pelo carrinho. Para enviar é preciso ter um cadastro.</li>
@@ -1161,7 +1161,7 @@ function normConfig(d) {
   ["logo", "hero"].forEach(k => { if (!okId(d[k])) delete d[k]; });
   d.whatsapp = String(d.whatsapp || "").replace(/\D/g, "").slice(0, 13);
   d.dpoName = clean(d.dpoName, 80); d.dpoEmail = /^[^\s@<>"']{1,64}@[^\s@<>"']{1,190}\.[a-z]{2,24}$/i.test(String(d.dpoEmail || "").trim()) ? String(d.dpoEmail).trim().toLowerCase() : "";
-  const cn = String(d.cnpj || "").replace(/\D/g, ""); d.cnpj = cn.length === 14 ? cn.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5") : "";
+  d.razao = clean(d.razao, 120); const cn = String(d.cnpj || "").replace(/\D/g, ""); d.cnpj = cn.length === 14 ? cn.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5") : "";
   d.heroTitle = clean(d.heroTitle, 40); d.heroText = clean(d.heroText, 180); d.about = clean(d.about, 1500);
   if (Array.isArray(d.categories)) d.categories = d.categories.map(c => clean(c, 60)).filter(Boolean).slice(0, 40); else delete d.categories;
   return d;
@@ -1965,7 +1965,8 @@ function renderLegal() {
     if (n) { a.href = "https://wa.me/" + n; a.textContent = "WhatsApp " + waTxt; }
     else { a.href = INSTAGRAM; a.textContent = "Instagram da loja"; }
   });
-  document.querySelectorAll(".cnpj-line").forEach(el => { el.hidden = !config.cnpj; el.querySelector(".cnpj-v").textContent = config.cnpj || ""; });
+  document.querySelectorAll(".cnpj-line").forEach(el => { el.hidden = !config.cnpj; el.querySelector(".cnpj-v").textContent = config.cnpj || ""; el.querySelector(".razao-v").textContent = config.razao ? "razão social " + config.razao + ", " : ""; });
+  document.querySelectorAll(".cnpj-foot").forEach(el => { el.hidden = !config.cnpj; el.querySelector(".cnpj-v").textContent = config.cnpj || ""; el.querySelector(".razao-f").textContent = config.razao ? config.razao + " · " : ""; });
   document.querySelectorAll(".dpo-name").forEach(el => el.textContent = config.dpoName || "Responsável pela Etiketa Urbana");
   if (config.dpoEmail) document.querySelectorAll(".dpo-mail").forEach(el => { el.innerHTML = ""; const a = document.createElement("a"); a.href = "mailto:" + config.dpoEmail + "?subject=" + encodeURIComponent("Privacidade - Etiketa Urbana"); a.textContent = config.dpoEmail; el.appendChild(a); });
 }
