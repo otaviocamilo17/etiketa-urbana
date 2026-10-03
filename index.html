@@ -659,6 +659,18 @@ body.priv-open .ckbar { display: none; }
 .policy ul { padding-left: 22px; margin: 6px 0; }
 .policy .box { background: var(--soft); border-radius: 10px; padding: 16px 18px; margin-top: 10px; }
 .policy .acts { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.policy .sum { margin: 0 0 8px; border-left: 4px solid var(--accent); }
+.policy .sum > b { display: block; font-size: 17px; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; }
+.policy .sum li { font-size: 16px; }
+.policy ol.lsteps { list-style: none; counter-reset: st; padding: 0; margin: 10px 0; display: grid; gap: 10px; }
+.policy ol.lsteps li { counter-increment: st; position: relative; padding: 14px 16px 14px 60px; background: var(--soft); border-radius: 10px; }
+.policy ol.lsteps li::before { content: counter(st); position: absolute; left: 16px; top: 14px; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-weight: 800; display: grid; place-items: center; font-size: 15px; }
+.policy .dpo { display: grid; gap: 12px; }
+.policy .dpo div { display: grid; grid-template-columns: 110px 1fr; gap: 10px; align-items: baseline; font-size: 17px; }
+.policy .dpo span { color: var(--muted); font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; }
+.policy .dpo b { overflow-wrap: anywhere; }
+.policy .lead { font-size: 18px; }
+@media (max-width: 520px) { .policy .dpo div { grid-template-columns: 1fr; gap: 2px; } }
 footer.foot .linkbtn { display: block; background: none; border: 0; padding: 4px 0; font: inherit; color: #b9b9bf; cursor: pointer; text-align: left; }
 footer.foot .linkbtn:hover { color: #fff; }
 .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 14px 22px; border-radius: 999px; font-size: 16px; font-weight: 700; z-index: 70; max-width: calc(100% - 32px); box-shadow: 0 10px 30px rgba(0,0,0,.25); text-align: center; }
@@ -889,7 +901,7 @@ footer.foot .linkbtn:hover { color: #fff; }
   <div class="wrap">
     <div class="cols">
       <div><h4>Etiketa Urbana</h4><p>Moda masculina<br>Rua Urbano Romano Meirelles, 51<br>Vila Nova, Porto Ferreira, SP</p></div>
-      <div><h4>Ajuda</h4><a href="#como-comprar">Como comprar</a><a href="#loja">Horário e endereço</a><a href="#conta">Minha conta</a><a href="#carrinho">Meu carrinho</a><a href="#contato">Fale conosco</a><a href="#privacidade">Política de Privacidade</a><button class="linkbtn" type="button" id="ck-prefs">Preferências de cookies</button></div>
+      <div><h4>Ajuda</h4><a href="#como-comprar">Como comprar</a><a href="#loja">Horário e endereço</a><a href="#conta">Minha conta</a><a href="#carrinho">Meu carrinho</a><a href="#contato">Fale conosco</a><a href="#privacidade">Política de Privacidade</a><a href="#termos">Termos de Uso</a><button class="linkbtn" type="button" id="ck-prefs">Preferências de cookies</button></div>
       <div><h4>Siga</h4><a href="https://www.instagram.com/etiketaurbanaoficial/" target="_blank" rel="noopener">Instagram @etiketaurbanaoficial</a><a id="foot-wa" target="_blank" rel="noopener" href="#">WhatsApp da loja</a></div>
     </div>
     <div class="base"><span>© Etiketa Urbana · Porto Ferreira, SP</span><span>Pedidos fechados pelo WhatsApp da loja</span></div>
@@ -954,9 +966,19 @@ footer.foot .linkbtn:hover { color: #fff; }
     <div class="eyebrow">LGPD · Lei 13.709/2018</div>
     <h2 id="t-priv">Política de Privacidade</h2>
     <p class="upd">Atualizada em 3 de outubro de 2026</p>
-    <p>Esta política explica quais dados a Etiketa Urbana coleta neste site, para que usa, com quem compartilha e como você pode exercer seus direitos de acordo com a Lei Geral de Proteção de Dados (LGPD).</p>
+    <p>Esta política explica quais dados a Etiketa Urbana coleta neste site, para que usa, com quem compartilha e como você pode exercer seus direitos de acordo com a Lei Geral de Proteção de Dados (LGPD). O uso do site também segue os <a href="#termos">Termos de Uso</a>.</p>
+    <div class="box sum">
+      <b>Em resumo</b>
+      <ul>
+        <li>Coletamos só o necessário para montar seu pedido e falar com você: nome, e-mail, WhatsApp e o que você escolheu na loja.</li>
+        <li>Não vendemos seus dados e não coletamos dados de cartão.</li>
+        <li>Cookies de estatística e anúncios só ligam se você aceitar.</li>
+        <li>Você pode ver, corrigir ou apagar seus dados quando quiser (veja o item 8).</li>
+        <li>Dúvidas sobre privacidade: fale com o Encarregado de Dados (item 9).</li>
+      </ul>
+    </div>
     <h3>1. Quem cuida dos seus dados</h3>
-    <p><b>Etiketa Urbana</b>, loja de moda masculina, Rua Urbano Romano Meirelles, 51, Vila Nova, Porto Ferreira/SP, CEP 13660-186. Contato para assuntos de privacidade: WhatsApp <a id="priv-wa" target="_blank" rel="noopener" href="https://wa.me/5519998984448">(19) 99898-4448</a>.</p>
+    <p><b>Etiketa Urbana</b><span class="cnpj-line" hidden>, CNPJ <span class="cnpj-v"></span></span>, loja de moda masculina, Rua Urbano Romano Meirelles, 51, Vila Nova, Porto Ferreira/SP, CEP 13660-186. A loja é a <b>controladora</b> dos dados, ou seja, quem decide como eles são usados. Contato da loja: <a class="priv-wa" id="priv-wa" target="_blank" rel="noopener" href="https://wa.me/5519998984448">WhatsApp (19) 99898-4448</a>.</p>
     <h3>2. Quais dados coletamos</h3>
     <ul>
       <li><b>Cadastro:</b> nome, e-mail e WhatsApp, informados por você em "Minha conta" ou no carrinho.</li>
@@ -981,11 +1003,87 @@ footer.foot .linkbtn:hover { color: #fff; }
     <h3>6. Por quanto tempo guardamos</h3>
     <p>Enquanto sua conta existir. Você pode apagar seu cadastro a qualquer momento em Minha conta, Meus dados, "Apagar meu cadastro", que remove seus dados, pedidos e avisos guardados no site. Podemos manter o mínimo exigido por lei, como registros de vendas.</p>
     <h3>7. Seus direitos</h3>
-    <p>Pela LGPD (art. 18), você pode pedir a qualquer momento: confirmação de que tratamos seus dados, acesso, correção, anonimização ou exclusão, portabilidade, informação sobre compartilhamento e a revogação do consentimento. Basta falar com a loja pelo WhatsApp. Você também pode reclamar à Autoridade Nacional de Proteção de Dados (ANPD).</p>
-    <h3>8. Segurança</h3>
+    <p>Pela LGPD (art. 18), você pode pedir a qualquer momento, sem custo:</p>
+    <ul>
+      <li><b>Confirmação e acesso:</b> saber se tratamos seus dados e receber uma cópia deles.</li>
+      <li><b>Correção:</b> arrumar dados errados ou desatualizados.</li>
+      <li><b>Anonimização, bloqueio ou exclusão:</b> de dados desnecessários ou tratados em desacordo com a lei.</li>
+      <li><b>Portabilidade:</b> levar seus dados para outro fornecedor.</li>
+      <li><b>Exclusão dos dados tratados com seu consentimento.</b></li>
+      <li><b>Informação:</b> saber com quem compartilhamos seus dados e o que acontece se você não der o consentimento.</li>
+      <li><b>Revogação do consentimento:</b> desmarcar autorizações a qualquer momento.</li>
+    </ul>
+    <p>Respondemos em até 15 dias. Se não ficar satisfeito, você também pode reclamar à Autoridade Nacional de Proteção de Dados (ANPD), em <a href="https://www.gov.br/anpd" target="_blank" rel="noopener">gov.br/anpd</a>.</p>
+    <h3>8. Como pedir a exclusão dos seus dados</h3>
+    <ol class="lsteps">
+      <li><b>Pelo próprio site, na hora:</b> entre em <a href="#conta">Minha conta</a>, abra "Meus dados" e toque em "Apagar meu cadastro". Seus dados, pedidos e avisos guardados no site são apagados.</li>
+      <li><b>Ou peça para a loja:</b> mande um e-mail para o Encarregado de Dados (item 9) ou uma mensagem no WhatsApp com o assunto "Excluir meus dados", informando o nome e o e-mail do cadastro.</li>
+      <li><b>Confirmação:</b> para sua segurança, podemos pedir uma confirmação de que o pedido é seu. Depois disso, a exclusão é feita e você recebe a resposta em até 15 dias.</li>
+    </ol>
+    <p>Alguns registros podem ser mantidos pelo prazo que a lei exige, como dados de vendas para fins fiscais. Eles ficam guardados com acesso restrito e não são usados para outra finalidade.</p>
+    <h3>9. Encarregado de Dados (DPO)</h3>
+    <p>O Encarregado é a pessoa responsável por receber pedidos e dúvidas sobre seus dados e por falar com a ANPD.</p>
+    <div class="box dpo">
+      <div><span>Nome</span><b class="dpo-name">Responsável pela Etiketa Urbana</b></div>
+      <div><span>E-mail</span><b class="dpo-mail"><a class="priv-wa" target="_blank" rel="noopener" href="https://wa.me/5519998984448">WhatsApp (19) 99898-4448</a></b></div>
+      <div><span>Endereço</span><b>Rua Urbano Romano Meirelles, 51, Vila Nova, Porto Ferreira/SP</b></div>
+    </div>
+    <h3>10. Segurança</h3>
     <p>Usamos conexão segura, limite de tentativas contra robôs, limpeza dos dados digitados e acesso restrito ao painel da loja por senha. Nenhum sistema é 100% imune, mas trabalhamos para proteger suas informações.</p>
-    <h3>9. Mudanças nesta política</h3>
+    <h3>11. Mudanças nesta política</h3>
     <p>Se esta política mudar, a data no topo é atualizada e, quando a mudança for importante, pediremos sua escolha de novo.</p>
+  </article>
+</section>
+<section class="accview" id="termos" aria-labelledby="t-termos" role="dialog" aria-modal="true" tabindex="-1">
+  <div class="accbar"><div class="wrap"><span class="accbar-t">etiketa urbana</span><button class="btn" type="button" id="terms-close">← Voltar<span class="accbar-x">&nbsp;para a loja</span></button></div></div>
+  <article class="wrap policy">
+    <div class="eyebrow">Regras de uso do site</div>
+    <h2 id="t-termos">Termos de Uso</h2>
+    <p class="upd">Atualizados em 3 de outubro de 2026</p>
+    <p>Bem-vindo ao site da Etiketa Urbana. Ao navegar, criar uma conta ou enviar um pedido, você concorda com estes termos. Eles foram escritos de forma simples e não tiram nenhum direito que você tem pelo Código de Defesa do Consumidor (CDC). Como tratamos seus dados está explicado na <a href="#privacidade">Política de Privacidade</a>.</p>
+    <h3>1. Quem somos</h3>
+    <p><b>Etiketa Urbana</b><span class="cnpj-line" hidden>, CNPJ <span class="cnpj-v"></span></span>, loja de moda masculina, Rua Urbano Romano Meirelles, 51, Vila Nova, Porto Ferreira/SP, CEP 13660-186. Atendimento: <a class="priv-wa" target="_blank" rel="noopener" href="https://wa.me/5519998984448">WhatsApp (19) 99898-4448</a>, de segunda a sexta das 10h às 18h30 e aos sábados das 10h às 15h.</p>
+    <h3>2. Como funciona o pedido</h3>
+    <ol class="lsteps">
+      <li>Você escolhe as peças, tamanhos e a forma de pagamento e envia o pedido pelo carrinho. Para enviar é preciso ter um cadastro.</li>
+      <li>O pedido chega pronto no WhatsApp da loja. Ele ainda é uma <b>reserva</b>: a venda só fica confirmada quando a loja responder confirmando estoque, valor e entrega ou retirada.</li>
+      <li>Você acompanha a situação do pedido em <a href="#conta">Minha conta</a>, Meus pedidos.</li>
+    </ol>
+    <h3>3. Preços, estoque e fotos</h3>
+    <ul>
+      <li>Os preços e promoções valem enquanto estiverem no site e enquanto houver estoque. O valor que vale é o confirmado pela loja no WhatsApp.</li>
+      <li>O estoque mostrado é atualizado pela loja, mas pode haver diferença, porque as peças também são vendidas na loja física. Se faltar algum item, avisamos e você decide se quer outra peça ou cancelar.</li>
+      <li>As fotos mostram as peças da forma mais fiel possível, mas a cor pode variar um pouco conforme a tela. Algumas imagens podem ser ilustrativas.</li>
+      <li>Erros evidentes de preço, como um valor muito abaixo do normal por falha de digitação, não obrigam a venda. Nesse caso avisamos você antes de qualquer pagamento.</li>
+    </ul>
+    <h3>4. Pagamento</h3>
+    <p>O pagamento não é feito no site. As formas aceitas, o parcelamento e o desconto à vista são os mostrados no site no momento do pedido e são combinados com a loja no WhatsApp ou na retirada. Nunca pedimos senha de cartão por mensagem.</p>
+    <h3>5. Retirada e entrega</h3>
+    <p>As peças podem ser retiradas na loja, no horário de atendimento. Entregas são combinadas diretamente com a loja, que informa prazo e valor antes da confirmação.</p>
+    <h3>6. Trocas, devoluções e arrependimento</h3>
+    <ul>
+      <li><b>Direito de arrependimento:</b> em compras feitas pelo site ou WhatsApp, você pode desistir em até <b>7 dias</b> depois de receber a peça, sem precisar explicar o motivo, e recebe de volta o valor pago (CDC, art. 49).</li>
+      <li><b>Troca por tamanho ou cor:</b> fale com a loja em até 30 dias, com a peça sem sinais de uso, lavagem ou perfume e com a etiqueta.</li>
+      <li><b>Defeito:</b> você tem até 90 dias para reclamar de defeito na peça (CDC, art. 26). Fazemos o reparo, a troca ou a devolução do valor.</li>
+      <li>Para qualquer um desses casos, basta mandar mensagem no WhatsApp da loja.</li>
+    </ul>
+    <h3>7. Sua conta</h3>
+    <ul>
+      <li>Use dados verdadeiros e mantenha seu cadastro atualizado, para que a loja consiga falar com você sobre o pedido.</li>
+      <li>A conta é pessoal. Você responde pelos pedidos feitos com ela.</li>
+      <li>Você pode apagar sua conta quando quiser em Minha conta, Meus dados, "Apagar meu cadastro".</li>
+      <li>Podemos suspender contas usadas para fraude, pedidos falsos ou abuso do site.</li>
+    </ul>
+    <h3>8. Uso correto do site</h3>
+    <p>Não é permitido usar robôs para fazer cadastros ou pedidos em massa, tentar invadir o site ou o painel da loja, enviar conteúdo ofensivo pelo formulário de contato ou usar o site para qualquer fim ilegal.</p>
+    <h3>9. Marca e conteúdo</h3>
+    <p>O nome Etiketa Urbana, o logotipo, as fotos e os textos deste site pertencem à loja ou são usados com autorização. Não podem ser copiados ou usados para outros fins sem permissão. Marcas de terceiros citadas pertencem aos seus donos.</p>
+    <h3>10. Responsabilidade</h3>
+    <p>Trabalhamos para manter o site no ar e com informações corretas, mas ele pode ficar fora do ar por manutenção ou falhas técnicas. Links para WhatsApp, Instagram e outros serviços levam a sites de terceiros, que têm termos próprios.</p>
+    <h3>11. Mudanças nestes termos</h3>
+    <p>Estes termos podem ser atualizados. A data no topo mostra a versão atual, e a versão que vale para um pedido é a que estava no ar quando ele foi enviado.</p>
+    <h3>12. Lei e foro</h3>
+    <p>Valem as leis brasileiras. Fica eleito o foro de Porto Ferreira/SP, sem prejuízo do seu direito, como consumidor, de entrar com uma ação na cidade onde mora (CDC, art. 101).</p>
   </article>
 </section>
 <div class="toast" id="toast" hidden role="status"></div>
@@ -1019,6 +1117,8 @@ function normConfig(d) {
   d = d && typeof d === "object" ? { ...d } : {};
   ["logo", "hero"].forEach(k => { if (!okId(d[k])) delete d[k]; });
   d.whatsapp = String(d.whatsapp || "").replace(/\D/g, "").slice(0, 13);
+  d.dpoName = clean(d.dpoName, 80); d.dpoEmail = /^[^\s@<>"']{1,64}@[^\s@<>"']{1,190}\.[a-z]{2,24}$/i.test(String(d.dpoEmail || "").trim()) ? String(d.dpoEmail).trim().toLowerCase() : "";
+  const cn = String(d.cnpj || "").replace(/\D/g, ""); d.cnpj = cn.length === 14 ? cn.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5") : "";
   d.heroTitle = clean(d.heroTitle, 40); d.heroText = clean(d.heroText, 180); d.about = clean(d.about, 1500);
   if (Array.isArray(d.categories)) d.categories = d.categories.map(c => clean(c, 60)).filter(Boolean).slice(0, 40); else delete d.categories;
   return d;
@@ -1080,7 +1180,7 @@ function toast(text) { const t = $("#toast"); t.textContent = text; t.hidden = f
 function waNumber() { const d = String(config.whatsapp || "").replace(/\D/g, ""); return !d ? "" : d.length <= 11 ? "55" + d : d; }
 const isFav = id => favs.has(id);
 function setCount(el, n) { el.textContent = n; if (n) el.removeAttribute("data-zero"); else el.setAttribute("data-zero", ""); }
-function lock() { document.body.classList.toggle("lock", !$("#drawer").hidden || !$("#pdp").hidden || !$("#mnav").hidden || $("#conta").classList.contains("open") || $("#privacidade").classList.contains("open")); $("#scrim").hidden = $("#drawer").hidden && $("#pdp").hidden && $("#mnav").hidden; }
+function lock() { document.body.classList.toggle("lock", !$("#drawer").hidden || !$("#pdp").hidden || !$("#mnav").hidden || $("#conta").classList.contains("open") || $("#privacidade").classList.contains("open") || $("#termos").classList.contains("open")); $("#scrim").hidden = $("#drawer").hidden && $("#pdp").hidden && $("#mnav").hidden; }
 
 /* ---------- pagamento (configurado no painel) ---------- */
 const PAY_DEFAULT = { pix: true, dinheiro: true, debito: true, credito: true, parcelas: 10, desconto: 15, descontoEm: ["pix", "dinheiro"] };
@@ -1667,6 +1767,7 @@ document.addEventListener("keydown", e => {
   else if (!$("#pdp").hidden) closePdp();
   else if (!$("#mnav").hidden) openMenu(false);
   else if ($("#privacidade").classList.contains("open")) closePolicy();
+  else if ($("#termos").classList.contains("open")) closeTerms();
   else if ($("#conta").classList.contains("open")) closeAccount();
 });
 function route() {
@@ -1676,6 +1777,7 @@ function route() {
   else if (h === "#favoritos") openCart(true, "fav");
   else if (h === "#conta") openAccount();
   else if (h === "#privacidade") openPolicy();
+  else if (h === "#termos") openTerms();
   else if (verifyOn && /^#verificar\/[A-Za-z0-9_-]{30,60}$/.test(h)) openVerifyLink(h.slice(11));
   else if (h.startsWith("#peca/") && loaded) { const id = decodeURIComponent(h.slice(6)); if (find(id) && pdpId !== id) openPdp(id); }
 }
@@ -1725,9 +1827,12 @@ $("#ck-reject").addEventListener("click", () => setCk(false));
 $("#ck-prefs").addEventListener("click", () => openPolicy(true));
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-ck]"); if (b) { setCk(b.dataset.ck === "accept"); return; }
-  const a = e.target.closest('a[href="#privacidade"]'); if (a) { e.preventDefault(); openPolicy(); }
+  const a = e.target.closest('a[href="#privacidade"]'); if (a) { e.preventDefault(); openPolicy(); return; }
+  const t = e.target.closest('a[href="#termos"]'); if (t) { e.preventDefault(); openTerms(); return; }
+  const c = e.target.closest('.policy a[href="#conta"]'); if (c) { e.preventDefault(); closePolicy(); closeTerms(); openAccount(); }
 });
 function openPolicy(toChoice) {
+  closeTerms();
   if (!$("#mnav").hidden) openMenu(false);
   if (!$("#drawer").hidden) openCart(false);
   const v = $("#privacidade"); v.classList.add("open"); v.scrollTop = 0; document.body.classList.add("priv-open"); renderCk();
@@ -1741,6 +1846,32 @@ function closePolicy() {
   lock();
 }
 $("#priv-close").addEventListener("click", closePolicy);
+function openTerms() {
+  closePolicy();
+  if (!$("#mnav").hidden) openMenu(false);
+  if (!$("#drawer").hidden) openCart(false);
+  const v = $("#termos"); v.classList.add("open"); v.scrollTop = 0; document.body.classList.add("priv-open");
+  lock(); v.focus({ preventScroll: true });
+}
+function closeTerms() {
+  const v = $("#termos"); if (!v.classList.contains("open")) return;
+  v.classList.remove("open"); document.body.classList.remove("priv-open");
+  try { if (location.hash === "#termos") history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+  lock();
+}
+$("#terms-close").addEventListener("click", closeTerms);
+// dados da loja nas páginas legais (vêm de Configurações no painel)
+function renderLegal() {
+  const n = waNumber(), l = n ? n.slice(2) : "";
+  const waTxt = n ? "(" + l.slice(0, 2) + ") " + l.slice(2, -4) + "-" + l.slice(-4) : "";
+  document.querySelectorAll("a.priv-wa").forEach(a => {
+    if (n) { a.href = "https://wa.me/" + n; a.textContent = "WhatsApp " + waTxt; }
+    else { a.href = INSTAGRAM; a.textContent = "Instagram da loja"; }
+  });
+  document.querySelectorAll(".cnpj-line").forEach(el => { el.hidden = !config.cnpj; el.querySelector(".cnpj-v").textContent = config.cnpj || ""; });
+  document.querySelectorAll(".dpo-name").forEach(el => el.textContent = config.dpoName || "Responsável pela Etiketa Urbana");
+  if (config.dpoEmail) document.querySelectorAll(".dpo-mail").forEach(el => { el.innerHTML = ""; const a = document.createElement("a"); a.href = "mailto:" + config.dpoEmail + "?subject=" + encodeURIComponent("Privacidade - Etiketa Urbana"); a.textContent = config.dpoEmail; el.appendChild(a); });
+}
 renderCk();
 if (ckGet() && ckGet().choice === "all") loadTrackers();
 
@@ -1792,6 +1923,7 @@ function renderContact() {
   if (n) { const l = n.slice(2); el.innerHTML = '<a target="_blank" rel="noopener" href="https://wa.me/' + n + '">(' + l.slice(0, 2) + ') ' + l.slice(2, -4) + '-' + l.slice(-4) + '</a>'; $("#foot-wa").href = "https://wa.me/" + n; }
   else { el.innerHTML = '<a target="_blank" rel="noopener" href="' + INSTAGRAM + '">Fale pelo Instagram</a>'; $("#foot-wa").href = INSTAGRAM; }
   const ab = $("#about-extra"); ab.textContent = config.about || ""; ab.hidden = !config.about;
+  renderLegal();
 }
 function markToday() {
   const d = new Date().getDay();
