@@ -11,8 +11,11 @@
   { const cur = JSON.parse(localStorage.getItem(KEY) || "{}"); Object.keys(cur).forEach(k => { if (!k.startsWith("clientes/")) delete cur[k]; }); Object.assign(cur, SEED); localStorage.setItem(KEY, JSON.stringify(cur)); }
   let n = 0;
   const snapDoc = (path, d) => ({ id: path.split("/").pop(), exists: path in d, data: () => d[path] ? JSON.parse(JSON.stringify(d[path])) : undefined, metadata: { fromCache: false, hasPendingWrites: false } });
-  const canWrite = path => role === "owner" || (role === "client" && (path === "clientes/" + uid || path === "mensagens/" + uid));
-  const canRead = path => role === "owner" || (!path.startsWith("clientes/") && !path.startsWith("admin/") && !path.startsWith("mensagens/")) || path === "clientes/" + uid || path === "mensagens/" + uid;
+  // Espelha as regras publicadas: owner tudo; operator (Editor) lê logística e grava só a própria auditoria;
+  // client lê e grava só o próprio cadastro, mensagens e logística.
+  const own = path => ["clientes/", "mensagens/", "logistica/", "auditoria/"].some(p => path === p + uid);
+  const canWrite = path => role === "owner" || (role === "client" && path !== "auditoria/" + uid && own(path)) || (role === "operator" && (path === "auditoria/" + uid || path === "logistica/" + uid));
+  const canRead = path => role === "owner" || own(path) || (!/^(clientes|admin|mensagens|auditoria|logistica)\//.test(path)) || (role === "operator" && path.startsWith("logistica/"));
   const err = () => Promise.reject({ code: "invalid_argument", message: "denied" });
   function doc(path) {
     return {
@@ -46,10 +49,10 @@
   const db = { doc, collection: p => coll(p) };
   const assets = { upload: async (b) => ({ id: "a" + (Date.now() + n++).toString(16).padStart(32, "0").slice(-32), url: "", sizeBytes: b.size, contentType: b.type }), delete: async () => ({ deleted: true }), list: async () => ({ assets: [], usage: {} }) };
   const user = {
-    isOwner: async () => role === "owner", canEdit: async () => role === "owner", can: async () => null,
+    isOwner: async () => role === "owner", canEdit: async () => role === "owner" || role === "operator", can: async () => null,
     id: async () => role === "anon" ? null : uid,
-    me: async () => ({ id: uid, name: "", email: null, avatarUrl: "", color: "#000", isOwner: role === "owner", canEdit: role === "owner" }),
-    profiles: async () => ({}),
+    me: async () => ({ id: uid, name: "", email: null, avatarUrl: "", color: "#000", isOwner: role === "owner", canEdit: role === "owner" || role === "operator" }),
+    profiles: async ids => Object.fromEntries((ids || []).map(i => [i, { id: i, name: i === "u_owner" ? "Dono da Loja" : i === "u_op" ? "Operador Teste" : "" }])),
   };
   window.loja = { use: async name => {  if (role === "anon" && name !== "user") return null; return { db, assets: role === "owner" ? assets : null, user }[name] ?? null; } };
 })();
@@ -669,7 +672,8 @@ body.priv-open .ckbar { display: none; }
 .policy .dpo div { display: grid; grid-template-columns: 110px 1fr; gap: 10px; align-items: baseline; font-size: 17px; }
 .policy .dpo span { color: var(--muted); font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; }
 .policy .dpo b { overflow-wrap: anywhere; }
-.check .opt { color: var(--muted); font-weight: 600; }
+.check .opt, .f .opt { color: var(--muted); font-weight: 600; }
+.ship-form { display: grid; gap: 14px; margin-top: 14px; }
 .acct-export { margin-top: 18px; display: grid; gap: 10px; }
 .acct-export textarea { width: 100%; min-height: 200px; font-family: var(--f-mono); font-size: 13px; line-height: 1.5; border: 1px solid var(--line); border-radius: 8px; padding: 12px; background: var(--surface); color: var(--ink); resize: vertical; }
 .acct-export .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
@@ -935,8 +939,22 @@ footer.foot .linkbtn:hover { color: #fff; }
         <div class="payopts" id="cart-pay" role="radiogroup" aria-label="Forma de pagamento"></div>
         <div class="f" id="cart-inst-box" hidden><label for="cart-inst">Em quantas vezes?</label><select id="cart-inst"></select></div>
       </section>
+      <section class="cstep" id="cart-ship">
+        <h3 class="cstep-h"><span class="num">3</span>Como você quer receber?</h3>
+        <div class="payopts" id="ship-opts" role="radiogroup" aria-label="Entrega">
+          <label class="payopt"><input type="radio" name="ship" value="retirada" checked><span>Retirar na loja</span><span class="pt">grátis</span></label>
+          <label class="payopt"><input type="radio" name="ship" value="entrega"><span>Receber em casa</span><span class="pt n">frete a combinar</span></label>
+        </div>
+        <div class="ship-form" id="ship-form" hidden>
+          <div class="f"><label for="ship-cep">CEP</label><input id="ship-cep" inputmode="numeric" autocomplete="postal-code" maxlength="9" placeholder="13660-000"></div>
+          <div class="f"><label for="ship-rua">Rua e número</label><input id="ship-rua" autocomplete="address-line1" maxlength="120" placeholder="Rua Exemplo, 123"></div>
+          <div class="f"><label for="ship-comp">Complemento <span class="opt">(opcional)</span></label><input id="ship-comp" autocomplete="address-line2" maxlength="60" placeholder="Apto, bloco, referência"></div>
+          <div class="f"><label for="ship-bairro">Bairro</label><input id="ship-bairro" maxlength="60"></div>
+          <div class="f"><label for="ship-cidade">Cidade</label><input id="ship-cidade" autocomplete="address-level2" maxlength="60" value="Porto Ferreira - SP"></div>
+        </div>
+      </section>
       <section class="cstep" id="cart-who">
-        <h3 class="cstep-h"><span class="num">3</span>Seu cadastro</h3>
+        <h3 class="cstep-h"><span class="num">4</span>Seu cadastro</h3>
         <div class="who-ok" id="who-ok" hidden></div>
         <p class="who-off" id="who-off" hidden>Para comprar, recarregue a página.</p>
         <form class="who-form" id="who-form" hidden novalidate>
@@ -990,6 +1008,7 @@ footer.foot .linkbtn:hover { color: #fff; }
     <ul>
       <li><b>Cadastro:</b> nome, e-mail e WhatsApp, informados por você em "Minha conta" ou no carrinho, e a data em que você aceitou os Termos de Uso e esta política.</li>
       <li><b>Fale conosco:</b> nome, e-mail e a mensagem que você escrever, com o registro da sua concordância.</li>
+      <li><b>Entrega:</b> CEP, rua, número, complemento, bairro e cidade, só quando você escolhe receber em casa. O endereço também fica salvo no seu aparelho para a próxima compra.</li>
       <li><b>Pedidos:</b> peças, tamanhos, quantidades, valores e forma de pagamento escolhida. O pagamento não é feito no site; nenhum dado de cartão é coletado.</li>
       <li><b>Preferências:</b> favoritos, avisos de "quando chegar", carrinho e peças vistas recentemente.</li>
       <li><b>Dados de uso (só com seu consentimento):</b> páginas visitadas e cliques, de forma estatística, para melhorar o site.</li>
@@ -1012,6 +1031,7 @@ footer.foot .linkbtn:hover { color: #fff; }
     <h3>5. Com quem compartilhamos</h3>
     <p>Não vendemos seus dados. Eles são usados apenas pela equipe da loja e só passam por serviços necessários para o site funcionar:</p>
     <ul>
+      <li><b>Equipe da loja:</b> cada pessoa vê só o que precisa. Quem cuida do estoque e da entrega vê apenas seu nome, o endereço de entrega e as peças do pedido. Valores, pagamento, e-mail, WhatsApp e mensagens ficam só com o administrador. Todo acesso, alteração ou exportação de dados de clientes fica registrado.</li>
       <li><b>Hospedagem e banco de dados</b> do site, onde o cadastro e os pedidos ficam guardados.</li>
       <li><b>WhatsApp</b>, quando você envia um pedido ou fala com a loja. Ele tem a própria política de privacidade.</li>
       <li><b>Envio de e-mail</b>, para o link de confirmação de cadastro, quando essa função estiver ligada.</li>
@@ -1050,7 +1070,7 @@ footer.foot .linkbtn:hover { color: #fff; }
     <h3>10. Menores de idade</h3>
     <p>O cadastro e as compras pelo site são para maiores de 18 anos. Menores podem comprar com a ajuda e o cadastro de um responsável. Se soubermos que um menor se cadastrou sem o responsável, apagamos os dados.</p>
     <h3>11. Segurança</h3>
-    <p>Usamos conexão segura, limite de tentativas contra robôs, limpeza dos dados digitados e acesso restrito ao painel da loja por senha. Nenhum sistema é 100% imune, mas trabalhamos para proteger suas informações.</p>
+    <p>Usamos conexão segura, limite de tentativas contra robôs, limpeza dos dados digitados e acesso restrito ao painel da loja por senha e por função (cada pessoa da equipe vê só o necessário) e registro de quem acessou, alterou ou exportou dados de clientes. Nenhum sistema é 100% imune, mas trabalhamos para proteger suas informações.</p>
     <h3>12. Mudanças nesta política</h3>
     <p>Se esta política mudar, a data no topo é atualizada e, quando a mudança for importante, pediremos sua escolha de novo.</p>
   </article>
@@ -1655,7 +1675,7 @@ function renderCart() {
   if (tab !== "cart") return;
   $("#cart-cnt").textContent = count ? "(" + count + (count > 1 ? " peças)" : " peça)") : "";
   if (!lines.length && lastSent) {
-    body.innerHTML = '<div class="sent" id="cart-sent"><span class="num">Pedido nº ' + esc(lastSent.id) + '</span><strong>Pedido enviado</strong><span>Agora é só tocar em enviar no WhatsApp. A loja confirma o estoque e combina a retirada com você.</span>' +
+    body.innerHTML = '<div class="sent" id="cart-sent"><span class="num">Pedido nº ' + esc(lastSent.id) + '</span><strong>Pedido enviado</strong><span>Agora é só tocar em enviar no WhatsApp. A loja confirma o estoque e combina a retirada ou a entrega com você.</span>' +
       '<a class="btn wa" id="cart-resend" target="_blank" rel="noopener" href="' + esc(lastSent.href) + '">O WhatsApp não abriu? Toque aqui</a><span>Você acompanha o pedido em <a href="#conta" id="cart-myorders">Minha conta</a>.</span><button class="btn primary" type="button" id="cart-shop">Continuar comprando</button></div>';
     $("#cart-checkout").hidden = true; $("#cart-foot").hidden = true;
     $("#cart-shop").addEventListener("click", () => { lastSent = null; openCart(false); $("#pecas").scrollIntoView(); });
@@ -1692,6 +1712,37 @@ function renderCart() {
   $("#cart-big-sub").textContent = m.id === "credito" ? inst() + "x de " + brl(total / inst()) : m.discount ? "no " + m.label + ", com desconto" : m.id ? "no " + m.label.replace("Cartão de ", "") : "";
   updateSendLink(lines, total);
 }
+/* ---------- entrega ---------- */
+// O endereço fica salvo só neste aparelho, para a próxima compra, e vai junto no pedido.
+const SHIP_KEY = "eu-entrega";
+function shipData() {
+  const tipo = (document.querySelector('#ship-opts input:checked') || {}).value === "entrega" ? "entrega" : "retirada";
+  if (tipo === "retirada") return { tipo };
+  return { tipo, cep: $("#ship-cep").value.replace(/\D/g, "").slice(0, 8), rua: clean($("#ship-rua").value, 120), comp: clean($("#ship-comp").value, 60), bairro: clean($("#ship-bairro").value, 60), cidade: clean($("#ship-cidade").value, 60) };
+}
+function shipError(d) {
+  if (d.tipo !== "entrega") return "";
+  if (d.cep.length !== 8) return "Coloque o CEP com 8 números.";
+  if (d.rua.length < 4 || !/\d/.test(d.rua)) return "Coloque a rua e o número da casa.";
+  if (d.bairro.length < 2) return "Coloque o bairro.";
+  if (d.cidade.length < 3) return "Coloque a cidade.";
+  return "";
+}
+const shipText = d => d && d.tipo === "entrega" ? clean(d.rua, 120) + (d.comp ? ", " + clean(d.comp, 60) : "") + " - " + clean(d.bairro, 60) + ", " + clean(d.cidade, 60) + " - CEP " + String(d.cep || "").slice(0, 5) + "-" + String(d.cep || "").slice(5, 8) : "Retirar na loja";
+function shipSave() { try { localStorage.setItem(SHIP_KEY, JSON.stringify(shipData())); } catch (e) {} }
+(function shipLoad() {
+  let d = null; try { d = JSON.parse(localStorage.getItem(SHIP_KEY) || "null"); } catch (e) {}
+  if (!d || typeof d !== "object" || d.tipo !== "entrega") return;
+  document.querySelector('#ship-opts input[value="entrega"]').checked = true; $("#ship-form").hidden = false;
+  $("#ship-cep").value = String(d.cep || "").replace(/\D/g, "").slice(0, 8).replace(/^(\d{5})(\d)/, "$1-$2");
+  $("#ship-rua").value = clean(d.rua, 120); $("#ship-comp").value = clean(d.comp, 60); $("#ship-bairro").value = clean(d.bairro, 60); $("#ship-cidade").value = clean(d.cidade, 60) || "Porto Ferreira - SP";
+})();
+$("#ship-opts").addEventListener("change", () => { $("#ship-form").hidden = shipData().tipo !== "entrega"; shipSave(); updateSendLink(); });
+$("#ship-form").addEventListener("input", e => {
+  if (e.target.id === "ship-cep") { const d = e.target.value.replace(/\D/g, "").slice(0, 8); e.target.value = d.replace(/^(\d{5})(\d)/, "$1-$2"); }
+  shipSave(); updateSendLink();
+});
+
 /* ---------- pedidos (ficam no cadastro do cliente; a loja acompanha no painel) ---------- */
 let orderId = null, lastSent = null;
 const newOrderId = () => "EU" + Date.now().toString(36).toUpperCase().slice(-6);
@@ -1701,12 +1752,21 @@ const myOrders = () => (me && Array.isArray(me.orders) ? me.orders : []).filter(
 async function recordOrder(id, lines, total, m) {
   if (!myRef || !me) return;
   const at = new Date().toISOString();
-  const o = { id, at, status: "novo", pay: m.id || "", payLabel: clean(m.label, 40), inst: m.id === "credito" ? inst() : 1,
+  const o = { id, at, status: "novo", pay: m.id || "", payLabel: clean(m.label, 40), inst: m.id === "credito" ? inst() : 1, entrega: shipData(),
     total: Math.round(finalTotal(total) * 100) / 100,
     items: lines.slice(0, 30).map(l => ({ id: l.p.id, name: clean(l.p.name, 120), sku: Number(l.p.sku) || 0, size: clean(l.size, 12), qty: l.qty, price: typeof l.p.price === "number" ? l.p.price : null })) };
   const orders = [o, ...myOrders().filter(x => x.id !== id)].slice(0, 30);
   try { await myRef.update({ orders, updatedAt: at }); me = { ...me, orders }; } catch (e) {}
+  await syncLogistica(orders);
   renderAccount();
+}
+// Cópia só com o que a equipe de estoque e entrega precisa: nome, endereço e peças.
+// Sem valores, pagamento, e-mail ou WhatsApp (LGPD: necessidade).
+async function syncLogistica(orders) {
+  if (!DB || !UID || !me) return;
+  const lg = (orders || myOrders()).slice(0, 30).map(x => ({ id: clean(x.id, 20), at: x.at, status: x.status, entrega: x.entrega && x.entrega.tipo === "entrega" ? x.entrega : { tipo: "retirada" },
+    items: (Array.isArray(x.items) ? x.items : []).map(i => ({ name: clean(i.name, 120), sku: Number(i.sku) || 0, size: clean(i.size, 12), qty: Number(i.qty) || 1 })) }));
+  try { await DB.doc("logistica/" + UID).set({ name: clean(me.name, 80), orders: lg, updatedAt: new Date().toISOString() }); } catch (e) {}
 }
 function updateSendLink(lines, total) {
   lines = lines || cartLines().filter(l => l.p);
@@ -1717,7 +1777,7 @@ function updateSendLink(lines, total) {
   if (!me) {
     btn.href = "#cart-who"; btn.classList.add("locked"); btn.setAttribute("aria-disabled", "true"); btn.removeAttribute("target");
     $("#cart-send-t").textContent = "Faça o cadastro para enviar";
-    $("#cart-note").textContent = "O cadastro é obrigatório para enviar o pedido. Preencha o passo 3 acima.";
+    $("#cart-note").textContent = "O cadastro é obrigatório para enviar o pedido. Preencha o passo 4 acima.";
     return;
   }
   if (needsVerify()) {
@@ -1726,13 +1786,21 @@ function updateSendLink(lines, total) {
     $("#cart-note").textContent = "Enviamos um link para " + me.email + ". Depois de confirmar, é só voltar e enviar o pedido.";
     return;
   }
+  const sd = shipData(), se = shipError(sd);
+  if (se) {
+    btn.href = "#cart-ship"; btn.classList.add("locked"); btn.setAttribute("aria-disabled", "true"); btn.removeAttribute("target");
+    $("#cart-send-t").textContent = "Complete o endereço de entrega";
+    $("#cart-note").textContent = se + " Ou escolha retirar na loja.";
+    return;
+  }
   btn.classList.remove("locked"); btn.removeAttribute("aria-disabled"); btn.target = "_blank";
   if (!orderId) orderId = newOrderId();
   const txt = "Olá, Etiketa Urbana! Quero fazer este pedido (nº " + orderId + "):\n\n" +
     lines.map(l => "• " + l.qty + "x " + l.p.name + " (" + skuCode(l.p.sku) + ")" + (l.size ? " tam. " + l.size : "") + (typeof l.p.price === "number" ? " — " + brl(l.p.price * l.qty) : "")).join("\n") +
     "\n\nPagamento: " + m.label + (m.id === "credito" ? " em " + inst() + "x de " + brl(total / inst()) : "") +
     "\nTotal: " + brl(finalTotal(total)) + (m.discount ? " (com " + pay().desconto + "% de desconto)" : "") +
-    "\n\nCliente: " + (me.name || "") + (me.whatsapp ? "\nWhatsApp: " + waText(me.whatsapp) : "") + (me.email ? "\nE-mail: " + me.email : "") + "\n\nPode confirmar o estoque?";
+    "\nEntrega: " + shipText(sd) + (sd.tipo === "entrega" ? " (frete a combinar)" : "") +
+    "\n\nCliente: " + (me.name || "") + (me.whatsapp ? "\nWhatsApp: " + waText(me.whatsapp) : "") + (me.email ? "\nE-mail: " + me.email : "") + "\n\nPode confirmar o estoque" + (sd.tipo === "entrega" ? " e o frete?" : "?");
   if (n) { btn.href = "https://wa.me/" + n + "?text=" + encodeURIComponent(txt); $("#cart-send-t").textContent = "Enviar pedido no WhatsApp"; $("#cart-note").textContent = "Abre o WhatsApp da loja com o pedido pronto. É só tocar em enviar."; }
   else { btn.href = INSTAGRAM; $("#cart-send-t").textContent = "Enviar pedido pelo Instagram"; $("#cart-note").textContent = "Abre o Instagram da loja para você mandar o pedido."; }
 }
@@ -1745,6 +1813,8 @@ $("#cart-send").addEventListener("click", e => {
     return;
   }
   if (needsVerify()) { e.preventDefault(); openAccount(); toast("Confirme seu e-mail para enviar o pedido."); return; }
+  const se = shipError(shipData());
+  if (se) { e.preventDefault(); $("#cart-ship").scrollIntoView({ behavior: "smooth", block: "start" }); toast(se); return; }
   toast("Abrindo o WhatsApp da loja…");
   const lines = cartLines().filter(l => l.p); if (!lines.length) return;
   const total = lines.filter(l => typeof l.p.price === "number").reduce((s, l) => s + l.p.price * l.qty, 0);
@@ -2092,7 +2162,7 @@ function orderHTML(o, full) {
   if (!full) return html + '<span>' + esc(items.map(i => (Number(i.qty) || 1) + "x " + clean(i.name, 80) + (i.size ? " (" + clean(i.size, 12) + ")" : "")).join(", ")) + '</span></li>';
   html += orderTrack(st) + '<div class="odet">' + items.map(i => { const p = find(i.id), q = Number(i.qty) || 1; return '<div class="oitem"><span class="th">' + (p ? thumbHTML(p) : shirt) + '</span><span><b>' + esc(clean(i.name, 80)) + '</b><span>' + (i.size ? 'Tamanho ' + esc(clean(i.size, 12)) + ' · ' : '') + q + (q > 1 ? ' unidades' : ' unidade') + (typeof i.price === "number" ? ' · ' + brl(i.price) + ' cada' : '') + '</span></span><b>' + (typeof i.price === "number" ? brl(i.price * q) : 'a confirmar') + '</b></div>'; }).join("") +
     '<div class="osum"><span>Subtotal</span><span>' + brl(sub) + '</span>' + (typeof o.total === "number" && sub - o.total > 0.009 ? '<span>Desconto</span><span>−' + brl(sub - o.total) + '</span>' : '') +
-    '<span>Pagamento</span><span>' + esc(clean(o.payLabel, 40) || "a combinar") + (o.pay === "credito" && o.inst > 1 ? ' em ' + o.inst + 'x' : '') + '</span><span>Retirada</span><span>Na loja ou combinado no WhatsApp</span><span class="t">Total</span><span class="t">' + (typeof o.total === "number" ? brl(o.total) : 'a confirmar') + '</span></div>' +
+    '<span>Pagamento</span><span>' + esc(clean(o.payLabel, 40) || "a combinar") + (o.pay === "credito" && o.inst > 1 ? ' em ' + o.inst + 'x' : '') + '</span><span>' + (o.entrega && o.entrega.tipo === "entrega" ? 'Entrega' : 'Retirada') + '</span><span>' + esc(o.entrega && o.entrega.tipo === "entrega" ? shipText(o.entrega) : 'Na loja ou combinado no WhatsApp') + '</span><span class="t">Total</span><span class="t">' + (typeof o.total === "number" ? brl(o.total) : 'a confirmar') + '</span></div>' +
     '<ul class="otime">' + ORDER_STEPS.concat(["cancelado"]).filter(k => k === "novo" || hist[k]).map(k => '<li><b>' + ORDER_ST[k] + '</b> · ' + fmtWhen(k === "novo" ? (hist.novo || o.at) : hist[k]) + '</li>').join("") + '</ul></div>' +
     '<div class="oacts"><button class="btn sm" type="button" data-again>Comprar de novo</button>' + (waNumber() ? '<a class="btn sm" target="_blank" rel="noopener" href="https://wa.me/' + waNumber() + '?text=' + encodeURIComponent("Olá, Etiketa Urbana! Quero falar sobre o meu pedido nº " + id + ".") + '">Falar sobre o pedido</a>' : '') + '</div></li>';
   return html;
@@ -2225,7 +2295,7 @@ $("#acc-del").addEventListener("click", async e => {
   }
   try {
     await myRef.delete();
-    if (DB && UID) { try { await DB.doc("mensagens/" + UID).delete(); } catch (e2) {} }
+    if (DB && UID) { try { await DB.doc("mensagens/" + UID).delete(); } catch (e2) {} try { await DB.doc("logistica/" + UID).delete(); } catch (e2) {} }
     try { localStorage.removeItem("eu-verify"); } catch (e2) {}
     $("#acc-export-box").hidden = true; $("#acc-export-txt").value = "";
     me = null; accFilled = false; $("#acc-form").reset(); renderAccount(); renderGrid(); renderCart(); toast("Cadastro apagado"); }
@@ -2291,6 +2361,8 @@ route();
     if (!me && user) { const v = await user.me(); if (v.name && !$("#acc-name").value) $("#acc-name").value = v.name; }
   }
   loaded = true; meLoaded = true; renderAll(); rotatePromo(); route();
+  // Pedidos feitos antes da separação existir: cria a cópia da logística uma vez.
+  if (me && UID && myOrders().length) { try { const lg = await DB.doc("logistica/" + UID).get(); if (!lg.exists) syncLogistica(); } catch (e) {} }
   prods.onSnapshot(snap => { products = snap.docs.map(d => normProduct(d.id, d.data())); renderAll(); }, () => {});
   cfg.onSnapshot(snap => { config = normConfig(snap.exists ? snap.data() : {}); renderAll(); }, () => {});
   if (myRef) myRef.onSnapshot(snap => { me = snap.exists ? snap.data() : null; renderAccount(); renderCart(); }, () => {});
