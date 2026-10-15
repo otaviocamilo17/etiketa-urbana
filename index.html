@@ -201,9 +201,11 @@ nav.menu a:hover { border-bottom-color: #ff3b47; }
 .look:hover img { transform: scale(1.04); }
 .look .lbl { position: absolute; left: 0; right: 0; bottom: 0; padding: 28px 12px 10px; background: linear-gradient(0deg, rgba(0,0,0,.78), transparent); font-size: 14px; font-weight: 700; line-height: 1.25; display: grid; gap: 2px; }
 .look .lbl b { font-size: 16px; }
-.looks .stamp { left: -7%; top: -7%; bottom: auto; width: 24%; z-index: 2; }
+.looks .htag { right: auto; left: -15%; top: 9%; width: 31%; z-index: 3; }
+.looks .htag::before { content: ""; position: absolute; left: 50%; top: -64px; width: 2px; height: 70px; margin-left: -1px; background: linear-gradient(180deg, transparent, #d9dde0 30%); }
+.looks .htag .stamp { width: 40%; left: -30%; bottom: -8%; }
 .hero.has-looks h1 { font-size: clamp(64px, 9.6vw, 148px); }
-@media (max-width: 860px) { .looks { width: 100%; gap: 8px; aspect-ratio: 6 / 5; } .look .lbl { font-size: 13px; padding: 22px 10px 8px; } .look .lbl span { display: none; } .looks .stamp { display: none; } }
+@media (max-width: 860px) { .looks { width: 100%; gap: 8px; aspect-ratio: 6 / 5; } .look .lbl { font-size: 13px; padding: 22px 10px 8px; } .look .lbl span { display: none; } .looks { margin-top: 26px; } .looks .htag { left: -1%; top: 5%; width: 25%; } .looks .htag::before { top: -46px; height: 50px; } .looks .htag dl { font-size: 8px; } .looks .htag .stamp { width: 52%; left: auto; right: -40%; bottom: -10%; font-size: 12px; } }
 /* cena: camiseta da loja na arara, com a etiqueta pendurada */
 .hero .art { display: grid; justify-items: center; }
 .scene { position: relative; width: min(500px, 100%); aspect-ratio: 1 / 1; }
@@ -1329,13 +1331,12 @@ function renderSeen() {
 }
 
 /* ---------- logo e abertura ---------- */
-function sceneHTML(logo) {
-  return '<div class="scene">' + SCENE +
-    '<div class="htag"><div class="card"><span class="hole"></span><div class="band">' + logo + '</div>' +
+function sceneHTML(logo) { return '<div class="scene">' + SCENE + tagHTML(logo) + '</div>'; }
+function tagHTML(logo) {
+  return '<div class="htag"><div class="card"><span class="hole"></span><div class="band">' + logo + '</div>' +
       '<dl><dt>Linha</dt><dd>Masculina</dd><dt>Loja</dt><dd>Porto Ferreira</dd><dt>Pgto.</dt><dd>Pix e cartão</dd></dl>' +
       '<div class="foot"><span class="bars"></span><span class="sku">EU-001</span></div></div>' +
-      (disc() ? '<div class="stamp">' + pay().desconto + '%<small>OFF NO PIX</small></div>' : '') + '</div>' +
-  '</div>';
+      (disc() ? '<div class="stamp">' + pay().desconto + '%<small>OFF NO PIX</small></div>' : '') + '</div>';
 }
 function heroLooks() {
   const vis = visible().filter(p => photosOf(p).length && !soldOut(p));
@@ -1343,9 +1344,9 @@ function heroLooks() {
   const rest = vis.filter(p => !picks.includes(p)).sort((a, b) => (b.order || 0) - (a.order || 0));
   return picks.concat(rest).slice(0, 3);
 }
-function looksHTML(list) {
+function looksHTML(list, logo) {
   return '<div class="looks">' + list.map((p, i) => '<a class="look" href="#peca/' + encodeURIComponent(p.id) + '" aria-label="Ver ' + esc(p.name) + '"><img src="' + blobUrl(photosOf(p)[0]) + '" alt="' + esc(p.name) + '"' + (i ? ' loading="lazy"' : ' fetchpriority="high"') + '><span class="lbl"><span>' + esc(p.name) + '</span>' + (p.price != null ? '<b>' + brl(p.price) + '</b>' : '') + '</span></a>').join("") +
-    (disc() ? '<div class="stamp">' + pay().desconto + '%<small>OFF NO PIX</small></div>' : '') + '</div>';
+    tagHTML(logo) + '</div>';
 }
 function renderLogo() {
   const small = document.querySelector('[data-logo="small"]'), big = document.querySelector('[data-logo="big"]');
@@ -1357,7 +1358,7 @@ function renderLogo() {
     big.innerHTML = sceneHTML(MARK + WORD);
   }
   const looks = config.hero ? [] : heroLooks();
-  if (looks.length === 3) big.innerHTML = looksHTML(looks);
+  if (looks.length === 3) big.innerHTML = looksHTML(looks, config.logo ? '<img class="logo-img" src="' + blobUrl(config.logo) + '" alt="Logo da Etiketa Urbana">' : MARK + WORD);
   const hero = $("#hero"); hero.classList.toggle("has-looks", looks.length === 3);
   hero.classList.toggle("has-photo", !!config.hero);
   if (config.hero) hero.style.setProperty("--hero", 'url("' + blobUrl(config.hero) + '")'); else hero.style.removeProperty("--hero");
